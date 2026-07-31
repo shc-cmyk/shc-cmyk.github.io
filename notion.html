@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도서 검색 및 노션 저장</title>
+  <style>
+    :root {
+      --primary-blue: #7bbbeb;
+      --primary-hover: #63a9de;
+      --pastel-bg: #f4f8fb;
+      --card-hover-bg: #ebf4fa;
+      --text-main: #333333;
+      --text-sub: #666666;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--pastel-bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px 16px;
+      border: 1px solid #dbe5ed;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 4px 12px rgba(123, 187, 235, 0.25);
+    }
+
+    button {
+      padding: 12px 20px;
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(123, 187, 235, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* 카드 스타일 */
+    .book-item {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      border: 1px solid #eef4f8;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    /* 추가 버튼 호버 시 카드 배경 변경 (활성화 상태일 때만) */
+    .book-item:has(.add-btn:not(:disabled):hover) {
+      background-color: var(--card-hover-bg);
+      border-color: #d2e6f5;
+    }
+
+    .book-item img {
+      width: 48px;
+      height: 68px;
+      object-fit: cover;
+      margin-right: 16px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-info {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .book-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .add-btn {
+      padding: 8px 14px;
+      font-size: 14px;
+      background-color: var(--primary-blue);
+      border-radius: 8px;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+
+    /* 노션 추가 완료 및 비활성화 스타일 */
+    .add-btn:disabled {
+      background-color: #d0d7de;
+      color: #6e7781;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* 상태 및 에러 메시지 스타일 */
+    .status-msg {
+      color: #888888;
+      font-size: 13px;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .error-msg {
+      color: #e74c3c;
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      background: #fdf2f2;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="search-box">
+      <input type="text" id="query" placeholder="책 제목을 입력하세요..." onkeydown="if(event.key==='Enter') searchBook()" />
+      <button onclick="searchBook()">🔍 검색</button>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    // ⚠️ 아래 두 URL을 본인의 Pipedream Trigger URL로 유지하세요!
+    const SEARCH_ENDPOINT = "https://eoumniiepljnfto.m.pipedream.net";
+    const ADD_NOTION_ENDPOINT = "https://eocos1dllcjjj8j.m.pipedream.net";
+
+    async function searchBook() {
+      const query = document.getElementById("query").value;
+      const resultsDiv = document.getElementById("results");
+
+      if (!query.trim()) {
+        alert("⚠️ 검색어를 입력해주세요!");
+        return;
+      }
+
+      resultsDiv.innerHTML = `<div class="status-msg">🔍 검색 중입니다...</div>`;
+
+      try {
+        const res = await fetch(`${SEARCH_ENDPOINT}?query=${encodeURIComponent(query)}`, {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(`서버 응답 에러 (상태코드: ${res.status}) ${errData.message || ''}`);
+        }
+
+        const books = await res.json();
+
+        if (!Array.isArray(books) || books.length === 0) {
+          resultsDiv.innerHTML = `<div class="status-msg">📚 검색 결과가 없습니다.</div>`;
+          return;
+        }
+
+        resultsDiv.innerHTML = "";
+        books.forEach(book => {
+          const item = document.createElement("div");
+          item.className = "book-item";
+          item.innerHTML = `
+            <img src="${book.cover || ''}" alt="cover" onerror="this.style.display='none'" />
+            <div class="book-info">
+              <div class="book-title">${book.title}</div>
+              <div>${book.author}</div>
+            </div>
+            <button class="add-btn" onclick='addNotion(event, ${JSON.stringify(book).replace(/'/g, "&apos;")})'>➕ 추가</button>
+          `;
+          resultsDiv.appendChild(item);
+        });
+
+      } catch (err) {
+        resultsDiv.innerHTML = `<div class="error-msg">❌ 에러 발생: ${err.message}</div>`;
+        console.error("Detail Error:", err);
+      }
+    }
+
+    async function addNotion(event, book) {
+      const btn = event.currentTarget; // 클릭된 버튼 요소
+      const originalText = btn.innerText;
+
+      // 추가 진행 중 처리 (중복 클릭 방지)
+      btn.innerText = "저장 중...";
+      btn.disabled = true;
+
+      try {
+        const payload = {
+          title: book.title,
+          author: book.author,
+          publisher: book.publisher,
+          totalPages: book.totalPages || 0,
+          coverUrl: book.cover
+        };
+
+        const res = await fetch(ADD_NOTION_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          // 성공 시 '완료' 상태로 전환 및 비활성화 유지
+          btn.innerText = "✅ 완료";
+          alert("🎉 노션 데이터베이스에 추가되었습니다!");
+        } else {
+          // 실패 시 상태 원상복구
+          btn.innerText = originalText;
+          btn.disabled = false;
+          alert("⚠️ 노션 추가 실패! Pipedream 로그를 확인해주세요.");
+        }
+      } catch (err) {
+        // 오류 시 상태 원상복구
+        btn.innerText = originalText;
+        btn.disabled = false;
+        alert("❌ 오류 발생: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
