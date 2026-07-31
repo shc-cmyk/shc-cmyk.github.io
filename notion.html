@@ -3,161 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>도서 검색 및 노션 저장</title>
+  <title>노션 북 트래커 위젯</title>
   <style>
     :root {
       --primary-blue: #7bbbeb;
       --primary-hover: #63a9de;
-      --pastel-bg: #f4f8fb;
-      --card-hover-bg: #ebf4fa;
+      --widget-bg: #f0f6fa; /* 하늘색 카드 배경 */
+      --card-item-bg: #ffffff;
+      --card-hover-bg: #e6f2f9;
       --text-main: #333333;
-      --text-sub: #666666;
+      --text-sub: #777777;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    /* 전체 배경: 노션과 일체감을 주는 흰색 배경 */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--pastel-bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #ffffff;
       color: var(--text-main);
       margin: 0;
-      padding: 40px 20px;
+      padding: 10px;
       display: flex;
       justify-content: center;
-      min-height: 100vh;
     }
 
-    .container {
+    /* 하늘색 둥근 위젯 컨테이너 */
+    .widget-card {
       width: 100%;
-      max-width: 520px;
+      max-width: 400px; /* 노션 좁은 너비에 최적화 */
+      background-color: var(--widget-bg);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
     }
 
+    /* 검색창 컴팩트화 */
     .search-box {
       display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
+      gap: 6px;
+      margin-bottom: 12px;
     }
 
     input {
       flex: 1;
-      padding: 14px 16px;
-      border: 1px solid #dbe5ed;
-      border-radius: 12px;
-      font-size: 15px;
+      padding: 8px 10px;
+      border: 1px solid #d0dfeb;
+      border-radius: 8px;
+      font-size: 12px;
       outline: none;
       background: #ffffff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-      transition: all 0.2s ease;
     }
 
     input:focus {
       border-color: var(--primary-blue);
-      box-shadow: 0 4px 12px rgba(123, 187, 235, 0.25);
     }
 
     button {
-      padding: 12px 20px;
+      padding: 8px 12px;
       background: var(--primary-blue);
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 15px;
+      border-radius: 8px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(123, 187, 235, 0.3);
-      transition: all 0.2s ease;
+      white-space: nowrap;
+      transition: background 0.2s;
     }
 
     button:hover:not(:disabled) {
       background: var(--primary-hover);
-      transform: translateY(-1px);
     }
 
-    /* 카드 스타일 */
+    /* 스크롤 가능한 검색 결과 영역 */
+    #results {
+      max-height: 320px; /* 노션 안에서 너무 길어지지 않도록 스크롤 부여 */
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    /* 결과 스크롤바 미니멀하게 */
+    #results::-webkit-scrollbar {
+      width: 4px;
+    }
+    #results::-webkit-scrollbar-thumb {
+      background: #c3d7e5;
+      border-radius: 4px;
+    }
+
+    /* 책 아이템 카드 컴팩트화 */
     .book-item {
       display: flex;
       align-items: center;
-      background: #ffffff;
-      padding: 16px;
-      margin-bottom: 12px;
-      border-radius: 14px;
-      border: 1px solid #eef4f8;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      transition: background-color 0.2s ease, transform 0.2s ease;
+      background: var(--card-item-bg);
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      border: 1px solid #e1eef6;
+      transition: background-color 0.2s;
     }
 
-    /* 추가 버튼 호버 시 카드 배경 변경 (활성화 상태일 때만) */
     .book-item:has(.add-btn:not(:disabled):hover) {
       background-color: var(--card-hover-bg);
-      border-color: #d2e6f5;
     }
 
+    /* 표지 이미지 컴팩트화 */
     .book-item img {
-      width: 48px;
-      height: 68px;
+      width: 32px;
+      height: 46px;
       object-fit: cover;
-      margin-right: 16px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      margin-right: 10px;
+      border-radius: 4px;
+      flex-shrink: 0;
     }
 
     .book-info {
       flex: 1;
-      font-size: 13px;
+      font-size: 11px;
       color: var(--text-sub);
+      overflow: hidden;
     }
 
     .book-title {
-      font-size: 15px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-main);
-      margin-bottom: 4px;
-      line-height: 1.3;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; /* 두 줄 넘어가면 ... 처리 */
     }
 
     .add-btn {
-      padding: 8px 14px;
-      font-size: 14px;
+      padding: 5px 9px;
+      font-size: 11px;
       background-color: var(--primary-blue);
-      border-radius: 8px;
-      margin-left: 10px;
-      white-space: nowrap;
+      border-radius: 6px;
+      margin-left: 6px;
+      flex-shrink: 0;
     }
 
-    /* 노션 추가 완료 및 비활성화 스타일 */
     .add-btn:disabled {
-      background-color: #d0d7de;
-      color: #6e7781;
+      background-color: #cbd5e1;
+      color: #64748b;
       cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
     }
 
-    /* 상태 및 에러 메시지 스타일 */
     .status-msg {
-      color: #888888;
-      font-size: 13px;
+      color: #777;
+      font-size: 11px;
       text-align: center;
-      padding: 24px;
+      padding: 16px 0;
     }
 
     .error-msg {
       color: #e74c3c;
-      font-size: 13px;
+      font-size: 11px;
       text-align: center;
-      padding: 16px;
+      padding: 10px;
       background: #fdf2f2;
-      border-radius: 10px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="widget-card">
     <div class="search-box">
-      <input type="text" id="query" placeholder="책 제목을 입력하세요..." onkeydown="if(event.key==='Enter') searchBook()" />
+      <input type="text" id="query" placeholder="책 제목 입력..." onkeydown="if(event.key==='Enter') searchBook()" />
       <button onclick="searchBook()">🔍 검색</button>
     </div>
 
@@ -165,7 +181,6 @@
   </div>
 
   <script>
-    // ⚠️ 아래 두 URL을 본인의 Pipedream Trigger URL로 유지하세요!
     const SEARCH_ENDPOINT = "https://eoumniiepljnfto.m.pipedream.net";
     const ADD_NOTION_ENDPOINT = "https://eocos1dllcjjj8j.m.pipedream.net";
 
@@ -178,7 +193,7 @@
         return;
       }
 
-      resultsDiv.innerHTML = `<div class="status-msg">🔍 검색 중입니다...</div>`;
+      resultsDiv.innerHTML = `<div class="status-msg">🔍 검색 중...</div>`;
 
       try {
         const res = await fetch(`${SEARCH_ENDPOINT}?query=${encodeURIComponent(query)}`, {
@@ -188,7 +203,7 @@
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(`서버 응답 에러 (상태코드: ${res.status}) ${errData.message || ''}`);
+          throw new Error(`서버 에러 (${res.status}) ${errData.message || ''}`);
         }
 
         const books = await res.json();
@@ -214,17 +229,15 @@
         });
 
       } catch (err) {
-        resultsDiv.innerHTML = `<div class="error-msg">❌ 에러 발생: ${err.message}</div>`;
-        console.error("Detail Error:", err);
+        resultsDiv.innerHTML = `<div class="error-msg">❌ 에러: ${err.message}</div>`;
       }
     }
 
     async function addNotion(event, book) {
-      const btn = event.currentTarget; // 클릭된 버튼 요소
+      const btn = event.currentTarget;
       const originalText = btn.innerText;
 
-      // 추가 진행 중 처리 (중복 클릭 방지)
-      btn.innerText = "저장 중...";
+      btn.innerText = "저장 중";
       btn.disabled = true;
 
       try {
@@ -243,17 +256,13 @@
         });
 
         if (res.ok) {
-          // 성공 시 '완료' 상태로 전환 및 비활성화 유지
           btn.innerText = "✅ 완료";
-          alert("🎉 노션 데이터베이스에 추가되었습니다!");
         } else {
-          // 실패 시 상태 원상복구
           btn.innerText = originalText;
           btn.disabled = false;
           alert("⚠️ 노션 추가 실패! Pipedream 로그를 확인해주세요.");
         }
       } catch (err) {
-        // 오류 시 상태 원상복구
         btn.innerText = originalText;
         btn.disabled = false;
         alert("❌ 오류 발생: " + err.message);
