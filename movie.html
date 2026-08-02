@@ -12,12 +12,19 @@
   
   <style>
     :root {
-      --bg-color: #ffffff;
-      --card-bg: #fcfcfc;
-      --border-color: #e5e5e5;
-      --text-main: #171717;
-      --text-sub: #737373;
-      --accent-black: #000000;
+      --bg-color: #ffffff;             /* 바탕색 (순백색) */
+      --card-bg: #f8fafc;             /* 카드 배경 (파스텔 연연한 블루) */
+      --border-color: #e2e8f0;         /* 테두리 */
+      --text-main: #334155;            /* 메인 텍스트 */
+      --text-sub: #64748b;             /* 보조 텍스트 */
+      --accent-pastel: #e0f2fe;        /* 검색/기본 버튼 */
+      --accent-hover: #bae6fd;         
+      --accent-text: #0369a1;          /* 파란색 포인트 컬러 */
+      
+      /* Format 태그: 파스텔 파랑보다 조금 더 진한 파랑 */
+      --tag-format-bg: #bae6fd;
+      --tag-format-text: #0284c7;
+      --tag-format-border: #7dd3fc;
     }
 
     * {
@@ -28,126 +35,128 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-color);
       margin: 0;
-      padding: 50px 20px;
+      padding: 30px 16px;
       color: var(--text-main);
     }
 
     .container {
-      max-width: 800px;
+      max-width: 580px;               /* 노션 임베드용 가로 폭 */
       margin: 0 auto;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .header h1 {
-      font-size: 2.1rem;
+      font-size: 1.6rem;
       letter-spacing: -0.02em;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 800;
-      color: var(--accent-black);
+      color: var(--text-main);
     }
 
     .header p {
       color: var(--text-sub);
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .search-form {
       display: flex;
-      gap: 10px;
-      margin-bottom: 40px;
+      gap: 8px;
+      margin-bottom: 24px;
     }
 
     .input-field {
       flex: 1;
-      padding: 14px 18px;
+      padding: 10px 14px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
-      background-color: #fafafa;
+      background-color: #f1f5f9;
       color: var(--text-main);
       transition: all 0.2s ease;
     }
 
     .input-field:focus {
-      border-color: var(--accent-black);
+      border-color: #93c5fd;
       background-color: #ffffff;
     }
 
     .btn {
-      padding: 14px 28px;
-      background-color: var(--accent-black);
-      color: #ffffff;
-      border: 1px solid var(--accent-black);
+      padding: 10px 18px;
+      background-color: var(--accent-pastel);
+      color: var(--accent-text);
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 14px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       transition: all 0.2s ease;
     }
 
     .btn:hover {
-      background-color: #262626;
+      background-color: var(--accent-hover);
     }
 
     .btn:disabled {
-      background-color: #e5e5e5;
-      border-color: #e5e5e5;
-      color: #a3a3a3;
+      background-color: #f1f5f9;
+      border-color: #e2e8f0;
+      color: #94a3b8;
       cursor: not-allowed;
     }
 
     .results-grid {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: 12px;
-      padding: 24px;
+      padding: 20px;
       display: flex;
-      gap: 24px;
+      gap: 20px;
       border: 1px solid var(--border-color);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 8px rgba(148, 163, 184, 0.08);
+      transition: all 0.2s ease;
     }
 
     .card:hover {
-      border-color: #a3a3a3;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(148, 163, 184, 0.15);
     }
 
     .poster-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
+      width: 120px;
     }
 
     .poster-img {
-      width: 140px;
-      height: 210px;
+      width: 120px;
+      height: 180px;
       object-fit: cover;
       border-radius: 8px;
-      background-color: #f5f5f5;
+      background-color: #e2e8f0;
       border: 1px solid var(--border-color);
     }
 
     .btn-download {
-      padding: 8px 10px;
+      padding: 6px 8px;
       background-color: #ffffff;
       color: var(--text-main);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       cursor: pointer;
       text-align: center;
@@ -159,80 +168,123 @@
     }
 
     .btn-download:hover {
-      background-color: var(--accent-black);
-      color: #ffffff;
-      border-color: var(--accent-black);
+      background-color: var(--accent-pastel);
+      color: var(--accent-text);
+      border-color: #93c5fd;
     }
 
     .info-container {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
+      min-width: 0;
     }
 
     .title-group {
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 12px;
+      padding-bottom: 8px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .title-text-wrapper {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .title-korean {
-      font-size: 1.35rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: var(--accent-black);
-      margin-right: 8px;
+      color: var(--text-main);
     }
 
     .title-original {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-sub);
     }
 
+    /* 표 항목 간 줄간격을 기존 8px에서 14px로 확대 */
     .attr-table {
       display: grid;
-      grid-template-columns: 130px 1fr;
-      row-gap: 10px;
-      font-size: 14px;
+      grid-template-columns: 95px 1fr;
+      row-gap: 14px;                   
+      font-size: 13px;
       align-items: center;
     }
 
     .attr-label {
       color: var(--text-sub);
       font-weight: 600;
+    }
+
+    .attr-value-wrapper {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 6px;
     }
 
     .attr-value {
       color: var(--text-main);
-      line-height: 1.4;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    /* 첨부 이미지 모양의 파란색 커스텀 복사 버튼 */
+    .btn-copy-icon {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 3px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-copy-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--accent-text);        /* 요청하신 파란색 지정 */
+    }
+
+    .btn-copy-icon:hover {
+      opacity: 1;
+      background-color: var(--accent-pastel);
     }
 
     .tag {
       display: inline-block;
-      background: #f5f5f5;
-      color: #404040;
-      padding: 3px 8px;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 2px 7px;
       border-radius: 4px;
-      font-size: 12px;
-      margin-right: 6px;
-      margin-bottom: 4px;
-      border: 1px solid #e5e5e5;
+      font-size: 11px;
+      margin-right: 4px;
+      margin-bottom: 2px;
     }
 
+    /* 조금 더 진한 파란색 파스텔 태그 */
     .tag-format {
-      background: #000000;
-      color: #ffffff;
-      border: none;
+      background: var(--tag-format-bg);
+      color: var(--tag-format-text);
       font-weight: 700;
+      border: 1px solid var(--tag-format-border);
     }
 
     .loading-text {
       text-align: center;
       color: var(--text-sub);
-      padding: 40px;
-      font-size: 15px;
+      padding: 30px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -248,13 +300,20 @@
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
+    // 첨부 이미지 아이콘 컴포넌트 (파란색 SVG)
+    const CopyIcon = () => (
+      <svg viewBox="0 0 512 512">
+        <path d="M160 96c-17.7 0-32 14.3-32 32V384c0 17.7 14.3 32 32 32H384c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32H160zM80 128c-26.5 0-48 21.5-48 48V432c0 26.5 21.5 48 48 48H336c26.5 0 48-21.5 48-48V416H384 160c-35.3 0-64-28.7-64-64V128H80zM160 48H384c44.2 0 80 35.8 80 80V384c0 44.2-35.8 80-80 80H160c-44.2 0-80-35.8-80-80V128c0-44.2 35.8-80 80-80z"/>
+      </svg>
+    );
+
     const App = () => {
       const [query, setQuery] = useState('');
       const [items, setItems] = useState([]);
       const [loading, setLoading] = useState(false);
       const [searched, setSearched] = useState(false);
 
-      // 원본 포스터 이미지 주소 클립보드 복사
+      // 원본 포스터 이미지 주소 복사
       const copyPosterUrl = async (imageUrl) => {
         try {
           await navigator.clipboard.writeText(imageUrl);
@@ -262,6 +321,17 @@
         } catch (err) {
           console.error("URL 복사 실패:", err);
           alert("주소 복사 중 오류가 발생했습니다.");
+        }
+      };
+
+      // 텍스트 속성 개별 복사 함수
+      const copyText = async (text, labelName) => {
+        if (!text || text === '정보 없음') return;
+        try {
+          await navigator.clipboard.writeText(text);
+          alert(`📋 [${labelName}] 정보가 복사되었습니다:\n"${text}"`);
+        } catch (err) {
+          console.error("복사 실패:", err);
         }
       };
 
@@ -332,7 +402,7 @@
                 title,
                 originalTitle,
                 format,
-                year,
+                year: year !== '정보 없음' ? `${year}년` : year,
                 nation,
                 runningTime,
                 image,
@@ -354,7 +424,7 @@
       return (
         <div className="container">
           <div className="header">
-            <h1>🎬 FILM ARCHIVE</h1>
+            <h1>FILM ARCHIVE</h1>
             <p>To infinity and beyond!</p>
           </div>
 
@@ -374,7 +444,7 @@
           {loading && <div className="loading-text">⏳ 상세 정보를 불러오는 중입니다...</div>}
 
           {!loading && searched && items.length === 0 && (
-            <div className="loading-text">믏 검색 결과가 없습니다.</div>
+            <div className="loading-text">검색 결과가 없습니다.</div>
           )}
 
           <div className="results-grid">
@@ -399,31 +469,69 @@
                 </div>
 
                 <div className="info-container">
+                  {/* Title 및 Original Title 복사 버튼 배치 */}
                   <div className="title-group">
-                    <span className="title-korean">{item.title}</span>
-                    <span className="title-original">({item.originalTitle})</span>
+                    <div className="title-text-wrapper">
+                      <span className="title-korean">{item.title}</span>
+                      <span className="title-original">({item.originalTitle})</span>
+                    </div>
+                    <button 
+                      className="btn-copy-icon" 
+                      onClick={() => copyText(item.originalTitle, 'Original Title')} 
+                      title="Original Title 복사"
+                    >
+                      <CopyIcon />
+                    </button>
                   </div>
 
                   <div className="attr-table">
+                    {/* Format (복사 버튼 없음) */}
                     <div className="attr-label">Format</div>
-                    <div className="attr-value">
+                    <div>
                       <span className="tag tag-format">{item.format}</span>
                     </div>
 
+                    {/* Year (복사 버튼 추가) */}
                     <div className="attr-label">Year</div>
-                    <div className="attr-value">{item.year}년</div>
-
-                    <div className="attr-label">Running Time</div>
-                    <div className="attr-value">{item.runningTime}</div>
-
-                    <div className="attr-label">Director</div>
-                    <div className="attr-value">{item.director}</div>
-
-                    <div className="attr-label">Actors</div>
-                    <div className="attr-value">
-                      {item.actors.length > 0 ? item.actors.join(', ') : '정보 없음'}
+                    <div className="attr-value-wrapper">
+                      <span className="attr-value">{item.year}</span>
+                      <button className="btn-copy-icon" onClick={() => copyText(item.year, 'Year')} title="Year 복사">
+                        <CopyIcon />
+                      </button>
                     </div>
 
+                    {/* Running Time (복사 버튼 추가) */}
+                    <div className="attr-label">Run Time</div>
+                    <div className="attr-value-wrapper">
+                      <span className="attr-value">{item.runningTime}</span>
+                      <button className="btn-copy-icon" onClick={() => copyText(item.runningTime, 'Running Time')} title="Running Time 복사">
+                        <CopyIcon />
+                      </button>
+                    </div>
+
+                    {/* Director (복사 버튼 추가) */}
+                    <div className="attr-label">Director</div>
+                    <div className="attr-value-wrapper">
+                      <span className="attr-value">{item.director}</span>
+                      <button className="btn-copy-icon" onClick={() => copyText(item.director, 'Director')} title="Director 복사">
+                        <CopyIcon />
+                      </button>
+                    </div>
+
+                    {/* Actors (복사 버튼 추가) */}
+                    <div className="attr-label">Actors</div>
+                    <div className="attr-value-wrapper">
+                      <span className="attr-value">
+                        {item.actors.length > 0 ? item.actors.join(', ') : '정보 없음'}
+                      </span>
+                      {item.actors.length > 0 && (
+                        <button className="btn-copy-icon" onClick={() => copyText(item.actors.join(', '), 'Actors')} title="Actors 복사">
+                          <CopyIcon />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Nation (복사 버튼 없음) */}
                     <div className="attr-label">Nation</div>
                     <div className="attr-value">
                       {item.nation.length > 0 ? (
@@ -431,6 +539,7 @@
                       ) : '정보 없음'}
                     </div>
 
+                    {/* Genre (복사 버튼 없음) */}
                     <div className="attr-label">Genre</div>
                     <div className="attr-value">
                       {item.genre.length > 0 ? (
