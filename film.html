@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FILM ARCHIVE</title>
+  <title>영화/시리즈 조회</title>
   <!-- React & ReactDOM CDN -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -45,10 +45,10 @@
       justify-content: center;
     }
 
-    /* 첫 번째 작품 카드까지만 딱 보이도록 세로 높이 축소 (460px -> 335px) */
+    /* 첫 번째 작품 카드까지만 딱 보이도록 세로 높이 축소 (335px) */
     .container {
       width: 620px;                   /* 검색 전후 모두 동일하게 고정 */
-      height: 437px;                  /* 첫 번째 작품 카드 맞춤 높이 */
+      height: 440px;                  /* 첫 번째 작품 카드 맞춤 높이 */
       background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 16px;
@@ -336,6 +336,39 @@
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
+    // 노션 임베드(iframe) 환경을 고려한 호환 복사 헬퍼 함수
+    const copyToClipboard = async (text) => {
+      if (!text || text === 'No information') return false;
+
+      // 1차 시도: Clipboard API (지원 시)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (err) {
+          console.warn("Clipboard API 차단됨, 대체 복사 방식 진행:", err);
+        }
+      }
+
+      // 2차 시도: iframe 임베드용 execCommand 폴백 방식
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        return successful;
+      } catch (err) {
+        console.error("대체 복사 실패:", err);
+        return false;
+      }
+    };
+
     const CopyIcon = ({ copied }) => (
       copied ? (
         <svg viewBox="0 0 24 24">
@@ -353,13 +386,10 @@
       const [copied, setCopied] = useState(false);
 
       const handleCopy = async () => {
-        if (!text || text === 'No information') return;
-        try {
-          await navigator.clipboard.writeText(text);
+        const success = await copyToClipboard(text);
+        if (success) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1200);
-        } catch (err) {
-          console.error("Failed to copy:", err);
         }
       };
 
@@ -378,12 +408,10 @@
       const [copied, setCopied] = useState(false);
 
       const handleCopy = async () => {
-        try {
-          await navigator.clipboard.writeText(imageUrl);
+        const success = await copyToClipboard(imageUrl);
+        if (success) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1200);
-        } catch (err) {
-          console.error("Failed to copy image URL:", err);
         }
       };
 
