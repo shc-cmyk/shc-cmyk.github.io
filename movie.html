@@ -77,7 +77,6 @@
       margin-bottom: 16px;
     }
 
-    /* 기존 폰트 크기 및 자간으로 원복 */
     .header h1 {
       font-size: 1.4rem;
       letter-spacing: -0.02em;
@@ -122,7 +121,7 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      min-width: 46px;                /* 아이콘 변경 시 버튼 폭 들쑥날쑥 방지 */
+      min-width: 46px;
     }
 
     .btn:hover {
@@ -196,6 +195,12 @@
       background-color: var(--accent-pastel);
       color: var(--accent-text);
       border-color: #93c5fd;
+    }
+
+    .btn-download.copied {
+      background-color: var(--accent-pastel);
+      color: var(--accent-text);
+      border-color: #7dd3fc;
     }
 
     .info-container {
@@ -288,6 +293,11 @@
       transform: scale(1.08);
     }
 
+    .btn-copy-icon.copied svg {
+      fill: #0284c7;
+      transform: scale(1.15);
+    }
+
     .tag {
       display: inline-block;
       background: #e2e8f0;
@@ -326,38 +336,76 @@
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
-    const CopyIcon = () => (
-      <svg viewBox="0 0 24 24">
-        <path d="M19 3H10C8.89543 3 8 3.89543 8 5V7H10V5H19V14H17V16H19C20.1046 16 21 15.1046 21 14V5C21 3.89543 20.1046 3 19 3Z" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M5 8H14C15.1046 8 16 8.89543 16 10V19C16 20.1046 15.1046 21 14 21H5C3.89543 21 3 20.1046 3 19V10C3 8.89543 3.89543 8 5 8ZM5 10H14V19H5V10Z" />
-      </svg>
+    const CopyIcon = ({ copied }) => (
+      copied ? (
+        /* 복사 완료 시 보여줄 체크 아이콘 */
+        <svg viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+        </svg>
+      ) : (
+        /* 기존 연한 파란색 복사 아이콘 */
+        <svg viewBox="0 0 24 24">
+          <path d="M19 3H10C8.89543 3 8 3.89543 8 5V7H10V5H19V14H17V16H19C20.1046 16 21 15.1046 21 14V5C21 3.89543 20.1046 3 19 3Z" />
+          <path fillRule="evenodd" clipRule="evenodd" d="M5 8H14C15.1046 8 16 8.89543 16 10V19C16 20.1046 15.1046 21 14 21H5C3.89543 21 3 20.1046 3 19V10C3 8.89543 3.89543 8 5 8ZM5 10H14V19H5V10Z" />
+        </svg>
+      )
     );
+
+    // 개별 복사 버튼 컴포넌트 (alert 팝업을 지우고 시각적 반응으로 대체)
+    const CopyButton = ({ text, title }) => {
+      const [copied, setCopied] = useState(false);
+
+      const handleCopy = async () => {
+        if (!text || text === 'No information') return;
+        try {
+          await navigator.clipboard.writeText(text);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1200); // 1.2초 후 원래대로
+        } catch (err) {
+          console.error("Failed to copy:", err);
+        }
+      };
+
+      return (
+        <button 
+          className={`btn-copy-icon ${copied ? 'copied' : ''}`} 
+          onClick={handleCopy} 
+          title={title}
+        >
+          <CopyIcon copied={copied} />
+        </button>
+      );
+    };
+
+    // 포스터 전용 복사 버튼
+    const PosterCopyButton = ({ imageUrl }) => {
+      const [copied, setCopied] = useState(false);
+
+      const handleCopy = async () => {
+        try {
+          await navigator.clipboard.writeText(imageUrl);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1200);
+        } catch (err) {
+          console.error("Failed to copy image URL:", err);
+        }
+      };
+
+      return (
+        <button 
+          className={`btn-download ${copied ? 'copied' : ''}`} 
+          onClick={handleCopy}
+        >
+          {copied ? '✓ Copied' : '🔗 Copy'}
+        </button>
+      );
+    };
 
     const App = () => {
       const [query, setQuery] = useState('');
       const [items, setItems] = useState([]);
       const [loading, setLoading] = useState(false);
       const [searched, setSearched] = useState(false);
-
-      const copyPosterUrl = async (imageUrl) => {
-        try {
-          await navigator.clipboard.writeText(imageUrl);
-          alert("📋 Successfully Copied!");
-        } catch (err) {
-          console.error("Failed to copy Image:", err);
-          alert("An error occurred while copying Image");
-        }
-      };
-
-      const copyText = async (text, labelName) => {
-        if (!text || text === 'No information') return;
-        try {
-          await navigator.clipboard.writeText(text);
-          alert(`📋 [${labelName}] Successfully Copied!:\n"${text}"`);
-        } catch (err) {
-          console.error("Failed to copy:", err);
-        }
-      };
 
       const handleSearch = async (e) => {
         e.preventDefault();
@@ -459,7 +507,6 @@
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            {/* 로딩 중일 때 말줄임표(···) 표시 */}
             <button type="submit" className="btn" disabled={loading}>
               {loading ? '⏳' : '🔍'}
             </button>
@@ -478,12 +525,7 @@
                   {item.image ? (
                     <>
                       <img src={item.image} alt={item.title} className="poster-img" />
-                      <button 
-                        className="btn-download" 
-                        onClick={() => copyPosterUrl(item.image)}
-                      >
-                        🔗 Copy
-                      </button>
+                      <PosterCopyButton imageUrl={item.image} />
                     </>
                   ) : (
                     <div className="poster-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '11px' }}>
@@ -498,13 +540,7 @@
                       <span className="title-korean">{item.title}</span>
                       <span className="title-original">({item.originalTitle})</span>
                     </div>
-                    <button 
-                      className="btn-copy-icon" 
-                      onClick={() => copyText(item.originalTitle, 'Original Title')} 
-                      title="Original Title 복사"
-                    >
-                      <CopyIcon />
-                    </button>
+                    <CopyButton text={item.originalTitle} title="Original Title 복사" />
                   </div>
 
                   <div className="attr-table">
@@ -518,27 +554,21 @@
                     <div className="attr-label">Year</div>
                     <div className="attr-value-wrapper">
                       <span className="attr-value">{item.year}</span>
-                      <button className="btn-copy-icon" onClick={() => copyText(item.year, 'Year')} title="Year 복사">
-                        <CopyIcon />
-                      </button>
+                      <CopyButton text={item.year} title="Year 복사" />
                     </div>
 
                     {/* Run Time */}
                     <div className="attr-label">Run Time</div>
                     <div className="attr-value-wrapper">
                       <span className="attr-value">{item.runningTime}</span>
-                      <button className="btn-copy-icon" onClick={() => copyText(item.runningTime, 'Run Time')} title="Run Time 복사">
-                        <CopyIcon />
-                      </button>
+                      <CopyButton text={item.runningTime} title="Run Time 복사" />
                     </div>
 
                     {/* Director */}
                     <div className="attr-label">Director</div>
                     <div className="attr-value-wrapper">
                       <span className="attr-value">{item.director}</span>
-                      <button className="btn-copy-icon" onClick={() => copyText(item.director, 'Director')} title="Director 복사">
-                        <CopyIcon />
-                      </button>
+                      <CopyButton text={item.director} title="Director 복사" />
                     </div>
 
                     {/* Actors */}
@@ -548,9 +578,7 @@
                         {item.actors.length > 0 ? item.actors.join(', ') : 'No information'}
                       </span>
                       {item.actors.length > 0 && (
-                        <button className="btn-copy-icon" onClick={() => copyText(item.actors.join(', '), 'Actors')} title="Actors 복사">
-                          <CopyIcon />
-                        </button>
+                        <CopyButton text={item.actors.join(', ')} title="Actors 복사" />
                       )}
                     </div>
 
