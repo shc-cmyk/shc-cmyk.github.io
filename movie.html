@@ -534,9 +534,11 @@ if (isMovie) {
                   <div className="info-container">
                     <div className="title-group">
                       <div className="title-text-wrapper">
-                        <span className="title-korean">{selectedItem.title}</span>
-                        <span className="title-original">({selectedItem.originalTitle})</span>
-                      </div>
+  <span className="title-korean">{selectedItem.title}</span>
+  {selectedItem.title !== selectedItem.originalTitle && (
+    <span className="title-original">{selectedItem.originalTitle}</span>
+  )}
+</div>
                     </div>
 
                     <div className="attr-table">
@@ -596,9 +598,11 @@ if (isMovie) {
 
                       <div className="simple-info">
                         <div className="simple-title-group">
-                          <span className="simple-title-korean">{item.title}</span>
-                          <span className="simple-title-original">({item.originalTitle})</span>
-                        </div>
+  <span className="simple-title-korean">{item.title}</span>
+  {item.title !== item.originalTitle && (
+    <span className="simple-title-original">{item.originalTitle}</span>
+  )}
+</div>
                         <div className="simple-actors">
                           {item.actors.length > 0 ? item.actors.join(', ') : 'No cast information'}
                         </div>
