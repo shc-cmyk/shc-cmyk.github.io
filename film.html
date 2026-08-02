@@ -20,10 +20,6 @@
       --accent-pastel: #e0f2fe;        /* 검색/기본 버튼 */
       --accent-hover: #bae6fd;         
       --accent-text: #0369a1;          
-      
-      /* 연한 파란색 복사 버튼 색상 설정 */
-      --accent-light-blue: #38bdf8;     
-      --accent-light-blue-hover: #0284c7; 
 
       /* Format 태그 */
       --tag-format-bg: #bae6fd;
@@ -45,10 +41,10 @@
       justify-content: center;
     }
 
-    /* 첫 번째 작품 카드까지만 딱 보이도록 세로 높이 축소 (335px) */
+    /* 가로 길이를 더 여유롭게 확충 (620px -> 680px) */
     .container {
-      width: 620px;                   /* 검색 전후 모두 동일하게 고정 */
-      height: 440px;                  /* 첫 번째 작품 카드 맞춤 높이 */
+      width: 680px;                   
+      height: 440px;                  /* 첫 화면 및 첫 카드 맞춤 높이 */
       background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 16px;
@@ -146,7 +142,7 @@
       border-radius: 12px;
       padding: 16px 18px;
       display: flex;
-      gap: 18px;
+      gap: 20px;
       border: 1px solid var(--border-color);
       box-shadow: 0 2px 6px rgba(148, 163, 184, 0.06);
       transition: all 0.2s ease;
@@ -160,7 +156,6 @@
     .poster-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 8px;
       flex-shrink: 0;
       width: 110px;
     }
@@ -172,35 +167,6 @@
       border-radius: 8px;
       background-color: #e2e8f0;
       border: 1px solid var(--border-color);
-    }
-
-    .btn-download {
-      padding: 5px 8px;
-      background-color: #ffffff;
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-download:hover {
-      background-color: var(--accent-pastel);
-      color: var(--accent-text);
-      border-color: #93c5fd;
-    }
-
-    .btn-download.copied {
-      background-color: var(--accent-pastel);
-      color: var(--accent-text);
-      border-color: #7dd3fc;
     }
 
     .info-container {
@@ -216,7 +182,6 @@
       padding-bottom: 6px;
       display: flex;
       align-items: baseline;
-      justify-content: space-between;
       gap: 8px;
     }
 
@@ -241,7 +206,7 @@
     .attr-table {
       display: grid;
       grid-template-columns: 80px 1fr;
-      row-gap: 12px;
+      row-gap: 10px;
       font-size: 13px;
       align-items: center;
     }
@@ -251,51 +216,10 @@
       font-weight: 600;
     }
 
-    .attr-value-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
     .attr-value {
       color: var(--text-main);
       line-height: 1.35;
       word-break: break-word;
-    }
-
-    .btn-copy-icon {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 3px;
-      border-radius: 4px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .btn-copy-icon svg {
-      width: 15px;
-      height: 15px;
-      fill: var(--accent-light-blue);
-      transition: fill 0.2s ease, transform 0.15s ease;
-    }
-
-    .btn-copy-icon:hover {
-      background-color: var(--accent-pastel);
-    }
-
-    .btn-copy-icon:hover svg {
-      fill: var(--accent-light-blue-hover);
-      transform: scale(1.08);
-    }
-
-    .btn-copy-icon.copied svg {
-      fill: #0284c7;
-      transform: scale(1.15);
     }
 
     .tag {
@@ -335,95 +259,6 @@
     const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyYjQxYjAxZjMzYmVhZDJjNWVjMDJkMzkxODg2YWUyNSIsIm5iZiI6MTc4NTY3MTU5My42MzEsInN1YiI6IjZhNmYyZmE5M2RiMGIzM2NlZjk1MDdmYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.bLxLfumrSA-GVX5Czby354InzGJHKNesSHAdBtK5iH8";
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-
-    // 노션 임베드(iframe) 환경을 고려한 호환 복사 헬퍼 함수
-    const copyToClipboard = async (text) => {
-      if (!text || text === 'No information') return false;
-
-      // 1차 시도: Clipboard API (지원 시)
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        try {
-          await navigator.clipboard.writeText(text);
-          return true;
-        } catch (err) {
-          console.warn("Clipboard API 차단됨, 대체 복사 방식 진행:", err);
-        }
-      }
-
-      // 2차 시도: iframe 임베드용 execCommand 폴백 방식
-      try {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-        
-        const successful = document.execCommand('copy');
-        document.body.removeChild(textarea);
-        return successful;
-      } catch (err) {
-        console.error("대체 복사 실패:", err);
-        return false;
-      }
-    };
-
-    const CopyIcon = ({ copied }) => (
-      copied ? (
-        <svg viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 24 24">
-          <path d="M19 3H10C8.89543 3 8 3.89543 8 5V7H10V5H19V14H17V16H19C20.1046 16 21 15.1046 21 14V5C21 3.89543 20.1046 3 19 3Z" />
-          <path fillRule="evenodd" clipRule="evenodd" d="M5 8H14C15.1046 8 16 8.89543 16 10V19C16 20.1046 15.1046 21 14 21H5C3.89543 21 3 20.1046 3 19V10C3 8.89543 3.89543 8 5 8ZM5 10H14V19H5V10Z" />
-        </svg>
-      )
-    );
-
-    const CopyButton = ({ text, title }) => {
-      const [copied, setCopied] = useState(false);
-
-      const handleCopy = async () => {
-        const success = await copyToClipboard(text);
-        if (success) {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1200);
-        }
-      };
-
-      return (
-        <button 
-          className={`btn-copy-icon ${copied ? 'copied' : ''}`} 
-          onClick={handleCopy} 
-          title={title}
-        >
-          <CopyIcon copied={copied} />
-        </button>
-      );
-    };
-
-    const PosterCopyButton = ({ imageUrl }) => {
-      const [copied, setCopied] = useState(false);
-
-      const handleCopy = async () => {
-        const success = await copyToClipboard(imageUrl);
-        if (success) {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1200);
-        }
-      };
-
-      return (
-        <button 
-          className={`btn-download ${copied ? 'copied' : ''}`} 
-          onClick={handleCopy}
-        >
-          {copied ? '✓ Copied' : '🔗 Copy'}
-        </button>
-      );
-    };
 
     const App = () => {
       const [query, setQuery] = useState('');
@@ -481,7 +316,7 @@
               const genre = (detail.genres || []).map(g => g.name);
 
               const actors = (credits.cast || [])
-                .slice(0, 5)
+                .slice(0, 3)
                 .map(a => a.original_name || a.name);
 
               let director = '';
@@ -547,10 +382,7 @@
               <div key={item.id} className="card">
                 <div className="poster-wrapper">
                   {item.image ? (
-                    <>
-                      <img src={item.image} alt={item.title} className="poster-img" />
-                      <PosterCopyButton imageUrl={item.image} />
-                    </>
+                    <img src={item.image} alt={item.title} className="poster-img" />
                   ) : (
                     <div className="poster-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '11px' }}>
                       🖼️ No image
@@ -564,46 +396,31 @@
                       <span className="title-korean">{item.title}</span>
                       <span className="title-original">({item.originalTitle})</span>
                     </div>
-                    <CopyButton text={item.originalTitle} title="Original Title 복사" />
                   </div>
 
                   <div className="attr-table">
                     {/* Format */}
                     <div className="attr-label">Format</div>
-                    <div>
+                    <div className="attr-value">
                       <span className="tag tag-format">{item.format}</span>
                     </div>
 
                     {/* Year */}
                     <div className="attr-label">Year</div>
-                    <div className="attr-value-wrapper">
-                      <span className="attr-value">{item.year}</span>
-                      <CopyButton text={item.year} title="Year 복사" />
-                    </div>
+                    <div className="attr-value">{item.year}</div>
 
                     {/* Run Time */}
                     <div className="attr-label">Run Time</div>
-                    <div className="attr-value-wrapper">
-                      <span className="attr-value">{item.runningTime}</span>
-                      <CopyButton text={item.runningTime} title="Run Time 복사" />
-                    </div>
+                    <div className="attr-value">{item.runningTime}</div>
 
                     {/* Director */}
                     <div className="attr-label">Director</div>
-                    <div className="attr-value-wrapper">
-                      <span className="attr-value">{item.director}</span>
-                      <CopyButton text={item.director} title="Director 복사" />
-                    </div>
+                    <div className="attr-value">{item.director}</div>
 
                     {/* Actors */}
                     <div className="attr-label">Actors</div>
-                    <div className="attr-value-wrapper">
-                      <span className="attr-value">
-                        {item.actors.length > 0 ? item.actors.join(', ') : 'No information'}
-                      </span>
-                      {item.actors.length > 0 && (
-                        <CopyButton text={item.actors.join(', ')} title="Actors 복사" />
-                      )}
+                    <div className="attr-value">
+                      {item.actors.length > 0 ? item.actors.join(', ') : 'No information'}
                     </div>
 
                     {/* Nation */}
