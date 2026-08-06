@@ -3,28 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>영화/시리즈 조회</title>
+  <title>FILM ARCHIVE</title>
   <!-- React & ReactDOM CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <!-- Babel CDN (TSX 해석용) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
   <style>
     :root {
-      --bg-color: #ffffff;             /* 바탕색 (순백색) */
-      --card-bg: #f8fafc;             /* 카드 배경 (파스텔 연연한 블루) */
-      --border-color: #e2e8f0;         /* 테두리 */
-      --text-main: #334155;            /* 메인 텍스트 */
-      --text-sub: #64748b;             /* 보조 텍스트 */
-      --accent-pastel: #e0f2fe;        /* 검색/기본 버튼 */
+      --bg-color: #ffffff;             
+      --card-bg: #f8fafc;             
+      --border-color: #e2e8f0;         
+      --text-main: #334155;            
+      --text-sub: #64748b;             
+      --accent-pastel: #e0f2fe;        
       --accent-hover: #bae6fd;         
       --accent-text: #0369a1;          
 
-      /* Format 태그 */
       --tag-format-bg: #bae6fd;
       --tag-format-text: #0284c7;
       --tag-format-border: #7dd3fc;
+
+      /* 파란색 Notion 버튼 테마 */
+      --notion-btn-bg: #e0f2fe;
+      --notion-btn-text: #0369a1;
+      --notion-btn-border: #bae6fd;
+      --notion-btn-hover: #bae6fd;
     }
 
     * {
@@ -41,40 +46,33 @@
       justify-content: center;
     }
 
-    /* 가로 길이를 더 여유롭게 확충 (620px -> 680px) */
     .container {
       width: 680px;                   
-      height: 420px;                  /* 첫 화면 및 첫 카드 맞춤 높이 */
+      height: 435px;                  
       background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 18px 20px;
+      padding: 16px 20px 18px 20px;
       box-shadow: 0 4px 16px rgba(148, 163, 184, 0.12);
-      overflow-y: auto;               /* 내부 스크롤 */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;               
     }
 
-    /* 커스텀 스크롤 바 */
-    .container::-webkit-scrollbar {
-      width: 6px;
-    }
-    .container::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .container::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
-    }
-    .container::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+    .sticky-header {
+      flex-shrink: 0;
+      background: #ffffff;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .header h1 {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       letter-spacing: -0.02em;
       margin: 0;
       font-weight: 700;
@@ -84,15 +82,14 @@
     .search-form {
       display: flex;
       gap: 8px;
-      margin-bottom: 18px;
     }
 
     .input-field {
       flex: 1;
-      padding: 9px 14px;
+      padding: 8px 14px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13.5px;
       outline: none;
       background-color: #f1f5f9;
       color: var(--text-main);
@@ -105,19 +102,19 @@
     }
 
     .btn {
-      padding: 9px 16px;
+      padding: 8px 16px;
       background-color: var(--accent-pastel);
       color: var(--accent-text);
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      min-width: 46px;
+      min-width: 44px;
     }
 
     .btn:hover {
@@ -131,26 +128,179 @@
       cursor: not-allowed;
     }
 
-    .results-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .btn-notion {
+      background-color: var(--notion-btn-bg);
+      color: var(--notion-btn-text);
+      border: 1px solid var(--notion-btn-border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
-    .card {
+    .btn-notion:hover {
+      background-color: var(--notion-btn-hover);
+    }
+
+    .btn-notion:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .scroll-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scroll-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scroll-content::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    .empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-sub);
+      text-align: center;
+      padding-bottom: 15px;
+    }
+
+    .empty-state .quote {
+      font-size: 13.5px;
+      font-style: italic;
+      font-weight: 500;
+      line-height: 1.6;
+      color: #64748b;
+      margin: 0 0 6px 0;
+    }
+
+    .empty-state .author {
+      font-size: 11.5px;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .simple-card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .simple-card:hover {
+      border-color: #93c5fd;
+      background: #f0f9ff;
+    }
+
+    .simple-poster {
+      width: 50px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 6px;
+      background-color: #e2e8f0;
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .simple-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      cursor: pointer;
+    }
+
+    .simple-title-group {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .simple-title-korean {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .simple-title-original {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    .simple-actors {
+      font-size: 12px;
+      color: var(--text-sub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .detail-view {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-back {
+      padding: 4px 10px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+      background: var(--accent-pastel);
+      color: var(--accent-text);
+      border-color: #93c5fd;
+    }
+
+    .detail-card {
       background: var(--card-bg);
       border-radius: 12px;
       padding: 16px 18px;
       display: flex;
       gap: 20px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 2px 6px rgba(148, 163, 184, 0.06);
-      transition: all 0.2s ease;
-    }
-
-    .card:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 10px rgba(148, 163, 184, 0.12);
     }
 
     .poster-wrapper {
@@ -199,7 +349,7 @@
     }
 
     .title-original {
-      font-size: 0.82rem;
+      font-size: 0.92rem;
       color: var(--text-sub);
     }
 
@@ -243,7 +393,7 @@
     .loading-text {
       text-align: center;
       color: var(--text-sub);
-      padding: 20px;
+      padding: 30px;
       font-size: 13px;
     }
   </style>
@@ -252,7 +402,7 @@
 
   <div id="root"></div>
 
-  <script type="text/babel" data-presets="typescript,react">
+  <script type="text/babel">
     const { useState } = React;
 
     const TMDB_API_KEY = "2b41b01f33bead2c5ec02d391886ae25";
@@ -260,11 +410,63 @@
     const TMDB_BASE_URL = "https://api.themoviedb.org/3";
     const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
 
+    const PIPEDREAM_WEBHOOK_URL = "https://eofad102jnd3qh9.m.pipedream.net/";
+
+    // 국가명 정규화 함수 (USA -> US, UK -> UK)
+    const normalizeNation = (nationList) => {
+      return (nationList || []).map(n => {
+        const trimmed = n.trim();
+        if (trimmed === 'United States of America' || trimmed === 'United States' || trimmed === 'US') return 'US';
+        if (trimmed === 'United Kingdom' || trimmed === 'Great Britain' || trimmed === 'UK') return 'UK';
+        return trimmed;
+      });
+    };
+
     const App = () => {
       const [query, setQuery] = useState('');
       const [items, setItems] = useState([]);
+      const [selectedItem, setSelectedItem] = useState(null);
       const [loading, setLoading] = useState(false);
       const [searched, setSearched] = useState(false);
+      const [addingId, setAddingId] = useState(null);
+
+      const sendToNotion = async (item, e) => {
+        if (e) e.stopPropagation();
+        setAddingId(item.id);
+
+        const payload = {
+          title: item.title,
+          originalTitle: item.originalTitle,
+          format: item.format,
+          year: item.rawYear,
+          nation: item.nation,
+          runningTime: item.rawRunningTime,
+          image: item.image,
+          actors: item.actors.join(', '),
+          director: item.director,
+          genre: item.genre
+        };
+
+        try {
+          const res = await fetch(PIPEDREAM_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          // Pipedream이 ok 상태코드를 주지 않아도, 실제 200~299 범위면 성공 처리
+          if (res.ok || res.status === 200) {
+            alert(`'${item.title}' 데이터가 노션에 성공적으로 추가되었습니다!`);
+          } else {
+            alert('노션 추가 중 오류가 발생했습니다. Pipedream 로그를 확인해 주세요.');
+          }
+        } catch (err) {
+          console.error("Notion send error:", err);
+          alert('전송 중 네트워크 에러가 발생했습니다.');
+        } finally {
+          setAddingId(null);
+        }
+      };
 
       const handleSearch = async (e) => {
         e.preventDefault();
@@ -272,6 +474,7 @@
 
         setLoading(true);
         setSearched(true);
+        setSelectedItem(null);
 
         try {
           const searchRes = await fetch(
@@ -302,15 +505,18 @@
               const format = isMovie ? 'Movie' : 'Series';
               
               const dateStr = isMovie ? detail.release_date : detail.first_air_date;
-              const year = dateStr ? parseInt(dateStr.split('-')[0], 10) : 'No information';
+              const rawYear = dateStr ? parseInt(dateStr.split('-')[0], 10) : null;
 
-              const nation = isMovie
+              const rawNation = isMovie
                 ? (detail.production_countries || []).map(c => c.name)
                 : (detail.origin_country || []);
 
-              const runningTime = isMovie
-                ? (detail.runtime ? `${detail.runtime}분` : 'No information')
-                : (detail.number_of_episodes ? `${detail.number_of_episodes}부작` : 'No information');
+              // 국가명 변환 적용
+              const nation = normalizeNation(rawNation);
+
+              const rawRunningTime = isMovie
+                ? (detail.runtime || null)
+                : (detail.number_of_episodes || null);
 
               const image = detail.poster_path ? `${TMDB_IMAGE_BASE_URL}${detail.poster_path}` : null;
               const genre = (detail.genres || []).map(g => g.name);
@@ -333,9 +539,13 @@
                 title,
                 originalTitle,
                 format,
-                year: year !== 'No information' ? `${year}년` : year,
+                rawYear,
+                yearStr: rawYear ? `${rawYear}년` : 'No information',
                 nation,
-                runningTime,
+                rawRunningTime,
+                runningTimeStr: isMovie 
+                  ? (rawRunningTime ? `${rawRunningTime}분` : 'No information')
+                  : (rawRunningTime ? `${rawRunningTime}부작` : 'No information'),
                 image,
                 actors,
                 director,
@@ -354,94 +564,161 @@
 
       return (
         <div className="container">
-          <div className="header">
-            <h1>FILM ARCHIVE</h1>
+          <div className="sticky-header">
+            <div className="header">
+              <h1>FILM ARCHIVE</h1>
+            </div>
+
+            <form onSubmit={handleSearch} className="search-form">
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Search..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              <button type="submit" className="btn" disabled={loading}>
+                {loading ? '⏳' : '🔍'}
+              </button>
+            </form>
           </div>
 
-          <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              className="input-field"
-              placeholder="Search..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <button type="submit" className="btn" disabled={loading}>
-              {loading ? '⏳' : '🔍'}
-            </button>
-          </form>
+          <div className="scroll-content">
+            {!loading && !searched && (
+              <div className="empty-state">
+                <p className="quote">"Once I get going... then I like, forget everything... and I've got this fire in my body. I'm just there. Flyin' like a bird. Like electricity. Yeah, like electricity."</p>
+                <p className="author">- Billy Elliot</p>
+              </div>
+            )}
 
-          {loading && <div className="loading-text">Loading details...</div>}
+            {loading && <div className="loading-text">Loading...</div>}
 
-          {!loading && searched && items.length === 0 && (
-            <div className="loading-text">No search results found.</div>
-          )}
+            {!loading && searched && items.length === 0 && (
+              <div className="loading-text">No search results found.</div>
+            )}
 
-          <div className="results-grid">
-            {items.map((item) => (
-              <div key={item.id} className="card">
-                <div className="poster-wrapper">
-                  {item.image ? (
-                    <img src={item.image} alt={item.title} className="poster-img" />
-                  ) : (
-                    <div className="poster-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '11px' }}>
-                      🖼️ No image
-                    </div>
-                  )}
+            {!loading && selectedItem ? (
+              <div className="detail-view">
+                <div className="detail-header-actions">
+                  <button className="btn-back" onClick={() => setSelectedItem(null)}>
+                    ← Back
+                  </button>
+                  <button 
+                    className="btn-notion" 
+                    onClick={(e) => sendToNotion(selectedItem, e)}
+                    disabled={addingId === selectedItem.id}
+                  >
+                    {addingId === selectedItem.id ? '⏳ Loading...' : '➕ Add to Notion'}
+                  </button>
                 </div>
 
-                <div className="info-container">
-                  <div className="title-group">
-                    <div className="title-text-wrapper">
-                      <span className="title-korean">{item.title}</span>
-                      <span className="title-original">({item.originalTitle})</span>
-                    </div>
+                <div className="detail-card">
+                  <div className="poster-wrapper">
+                    {selectedItem.image ? (
+                      <img src={selectedItem.image} alt={selectedItem.title} className="poster-img" />
+                    ) : (
+                      <div className="poster-img" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '11px' }}>
+                        🖼️ No image
+                      </div>
+                    )}
                   </div>
 
-                  <div className="attr-table">
-                    {/* Format */}
-                    <div className="attr-label">Format</div>
-                    <div className="attr-value">
-                      <span className="tag tag-format">{item.format}</span>
+                  <div className="info-container">
+                    <div className="title-group">
+                      <div className="title-text-wrapper">
+                        <span className="title-korean">{selectedItem.title}</span>
+                        {selectedItem.title !== selectedItem.originalTitle && (
+                          <span className="title-original">{selectedItem.originalTitle}</span>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Year */}
-                    <div className="attr-label">Year</div>
-                    <div className="attr-value">{item.year}</div>
+                    <div className="attr-table">
+                      <div className="attr-label">Format</div>
+                      <div className="attr-value">
+                        <span className="tag tag-format">{selectedItem.format}</span>
+                      </div>
 
-                    {/* Run Time */}
-                    <div className="attr-label">Run Time</div>
-                    <div className="attr-value">{item.runningTime}</div>
+                      <div className="attr-label">Year</div>
+                      <div className="attr-value">{selectedItem.yearStr}</div>
 
-                    {/* Director */}
-                    <div className="attr-label">Director</div>
-                    <div className="attr-value">{item.director}</div>
+                      <div className="attr-label">Run Time</div>
+                      <div className="attr-value">{selectedItem.runningTimeStr}</div>
 
-                    {/* Actors */}
-                    <div className="attr-label">Actors</div>
-                    <div className="attr-value">
-                      {item.actors.length > 0 ? item.actors.join(', ') : 'No information'}
-                    </div>
+                      <div className="attr-label">Director</div>
+                      <div className="attr-value">{selectedItem.director}</div>
 
-                    {/* Nation */}
-                    <div className="attr-label">Nation</div>
-                    <div className="attr-value">
-                      {item.nation.length > 0 ? (
-                        item.nation.map((n, idx) => <span key={idx} className="tag">{n}</span>)
-                      ) : 'No information'}
-                    </div>
+                      <div className="attr-label">Actors</div>
+                      <div className="attr-value">
+                        {selectedItem.actors.length > 0 ? selectedItem.actors.join(', ') : 'No information'}
+                      </div>
 
-                    {/* Genre */}
-                    <div className="attr-label">Genre</div>
-                    <div className="attr-value">
-                      {item.genre.length > 0 ? (
-                        item.genre.map((g, idx) => <span key={idx} className="tag">{g}</span>)
-                      ) : 'No information'}
+                      <div className="attr-label">Nation</div>
+                      <div className="attr-value">
+                        {selectedItem.nation.length > 0 ? (
+                          selectedItem.nation.map((n, idx) => <span key={idx} className="tag">{n}</span>)
+                        ) : 'No information'}
+                      </div>
+
+                      <div className="attr-label">Genre</div>
+                      <div className="attr-value">
+                        {selectedItem.genre.length > 0 ? (
+                          selectedItem.genre.map((g, idx) => <span key={idx} className="tag">{g}</span>)
+                        ) : 'No information'}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+            ) : (
+              !loading && searched && (
+                <div className="results-list">
+                  {items.map((item) => (
+                    <div 
+                      key={item.id} 
+                      className="simple-card"
+                    >
+                      {item.image ? (
+                        <img 
+                          src={item.image} 
+                          alt={item.title} 
+                          className="simple-poster" 
+                          onClick={() => setSelectedItem(item)} 
+                        />
+                      ) : (
+                        <div 
+                          className="simple-poster" 
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-sub)', fontSize: '10px' }}
+                          onClick={() => setSelectedItem(item)}
+                        >
+                          🖼️
+                        </div>
+                      )}
+
+                      <div className="simple-info" onClick={() => setSelectedItem(item)}>
+                        <div className="simple-title-group">
+                          <span className="simple-title-korean">{item.title}</span>
+                          {item.title !== item.originalTitle && (
+                            <span className="simple-title-original">{item.originalTitle}</span>
+                          )}
+                        </div>
+                        <div className="simple-actors">
+                          {item.actors.length > 0 ? item.actors.join(', ') : 'No cast information'}
+                        </div>
+                      </div>
+
+                      <button 
+                        className="btn-notion" 
+                        onClick={(e) => sendToNotion(item, e)}
+                        disabled={addingId === item.id}
+                      >
+                        {addingId === item.id ? '⏳' : '➕'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
           </div>
         </div>
       );
