@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>101 Archive</title>
+  <style>
+    /* --------------------------------------------------
+       1. Pastel Blue-Violet & Game Theme Variables
+    -------------------------------------------------- */
+    :root {
+      --bg-color: #EEF1FF;        
+      --card-bg: #FFFFFF;         
+      --text-main: #2A2E45;       
+      --text-sub: #72799C;        
+      
+      --color-1: #B1B2FF;         /* Primary Accent */
+      --color-2: #AAC4FF;         /* Secondary Accent */
+      --color-3: #D2DAFF;         /* Pixel Border Tone */
+      --color-4: #EEF1FF;         
+
+      --pixel-shadow: 3px 3px 0px #AAC4FF;
+      --pixel-shadow-sm: 2px 2px 0px #AAC4FF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background-color: var(--bg-color);
+      position: relative;
+      padding-bottom: 60px;
+    }
+
+    /* --------------------------------------------------
+       2. 프로필 선택 화면 (Retro Character Select)
+    -------------------------------------------------- */
+    #profile-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .game-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #FFF;
+      background: var(--color-1);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 11px;
+      text-transform: uppercase;
+      box-shadow: 2px 2px 0px #72799C;
+    }
+
+    .brand-logo {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--text-main);
+      text-shadow: 2px 2px 0px var(--color-3);
+      margin-bottom: 7px;
+    }
+
+    .blink-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--color-1);
+      margin-bottom: 32px;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink { 
+      0%, 100% { opacity: 1; } 
+      50% { opacity: 0.3; } 
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px 8px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .profile-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background-color: var(--card-bg);
+      border: 3px solid var(--color-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 7px;
+      box-shadow: var(--pixel-shadow);
+      transition: all 0.15s ease-in-out;
+    }
+
+    .profile-item:hover .profile-avatar, 
+    .profile-item:active .profile-avatar {
+      transform: translateY(-4px);
+      border-color: var(--color-1);
+      box-shadow: 4px 6px 0px var(--color-1);
+      background-color: #FFF;
+    }
+
+    .profile-name {
+      font-size: 0.82rem;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .level-tag {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: var(--text-sub);
+      background: #FFF;
+      border: 1px solid var(--color-3);
+      padding: 1px 6px;
+      border-radius: 6px;
+      margin-top: 3px;
+      margin-bottom: 3px;
+      box-shadow: 1px 1px 0px var(--color-3);
+    }
+
+    .profile-add {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    .profile-add .profile-avatar {
+      border: 2px dashed var(--color-2);
+      box-shadow: none;
+      background: transparent;
+    }
+
+    /* --------------------------------------------------
+       3. 메인 갤러리 (Arcade HUD & Quest Timeline)
+    -------------------------------------------------- */
+    #main-content {
+      display: none;
+    }
+
+    /* 게임 UI 상단 Status Bar (HUD) */
+    header {
+  padding: 24px 20px 8px;
+  background-color: var(--bg-color);
+  position: sticky;
+  top: 0;
+  z-index: 20; /* 갤러리 요소보다 위로 배치 */
+  border-bottom: 1px solid var(--color-3); /* 헤더 경계 구분 (선택사항) */
+}
+
+    .hud-box {
+      background: var(--card-bg);
+      border: 2px solid var(--color-1);
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: var(--pixel-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-player-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mini-title {
+      font-size: 0.65rem;
+      letter-spacing: 1.0px;
+      color: var(--color-1);
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .main-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .hud-status {
+      display: flex;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--color-1);
+      background: var(--bg-color);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--color-3);
+    }
+
+    /* 스테이지(연도) 네비게이션 */
+    .year-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 15px 0 4px; /* 헤더 내부 패딩에 맞게 축소 */
+  scrollbar-width: none;
+}
+.year-nav::-webkit-scrollbar { display: none; }
+
+    .year-tab {
+      padding: 6px 12px;
+      background-color: var(--card-bg);
+      color: var(--text-sub);
+      border: 2px solid var(--color-3);
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: var(--pixel-shadow-sm);
+      transition: all 0.15s;
+    }
+
+    /* 기본 호버 효과 (마우스 올렸을 때 살짝 뜨는 느낌) */
+.year-tab:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-1);
+  color: var(--color-1);
+}
+
+/* 실제로 선택되어 active 클래스가 붙었을 때만 채우기 색상 적용 */
+.year-tab.active {
+  
+}
+
+    .year-tab.letter-tab {
+      border-color: var(--color-1);
+      color: var(--color-1);
+    }
+
+    /* --------------------------------------------------
+       4. 타임라인 & 상단 정렬 2열 Grid (Pixel Card)
+    -------------------------------------------------- */
+    .gallery-container {
+      padding: 13px 20px;
+      position: relative;
+    }
+
+    /* 픽셀 퀘스트 경로 연결선 */
+    .gallery-container::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      width: 3px;
+      height: calc(100% - 40px);
+      background-color: var(--color-2);
+      z-index: 1;
+    }
+
+    .year-section {
+      position: relative;
+      margin-bottom: 32px;
+      z-index: 2;
+    }
+
+    .year-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 14px;
+    }
+
+    /* 레벨 마일스톤 도트 */
+    .year-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background-color: var(--color-1);
+      border: 2px solid var(--card-bg);
+      box-shadow: 0 0 0 2px var(--color-2);
+    }
+
+   /* 좌우 순서대로 배치되며 1행 상단이 깔끔하게 맞춰지는 2열 Flex 레이아웃 */
+.masonry-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-left: 20px;
+}
+
+.photo-card {
+  width: calc(50% - 6px); /* 정확히 2열로 분할하여 잘림 현상 방지 */
+  align-self: flex-start;  /* 각 행의 상단 시작선 맞춤 */
+  margin-bottom: 0;        /* gap 속성을 사용하므로 margin 제거 */
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--pixel-shadow);
+  cursor: pointer;
+  border: 2px solid var(--color-3);
+  padding: 6px;
+  transition: all 0.15s ease;
+}
+
+.photo-card:hover {
+  border-color: var(--color-1);
+  transform: translateY(-3px);
+  box-shadow: 4px 6px 0px var(--color-1);
+}
+
+.photo-card:active {
+  transform: scale(0.98);
+}
+
+    .photo-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    .photo-info {
+      padding: 6px 4px 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .photo-date {
+      font-size: 0.65rem;
+      color: var(--text-sub);
+      font-weight: 700;
+    }
+
+    .item-tag {
+      font-size: 0.55rem;
+      font-weight: 800;
+      color: var(--color-1);
+      background: var(--bg-color);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    /* --------------------------------------------------
+       5. 엔딩 메시지 (Developer's Letter Box)
+    -------------------------------------------------- */
+    .letter-section {
+      position: relative;
+      margin-top: 40px;
+      margin-bottom: 24px;
+      padding-left: 20px;
+      z-index: 2;
+    }
+
+    .letter-card {
+      background: var(--card-bg);
+      border: 2px solid var(--color-1);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 4px 4px 0px var(--color-1);
+    }
+
+    .letter-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .letter-body {
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text-sub);
+      white-space: pre-line;
+      font-weight: 500;
+    }
+
+    .letter-footer {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-1);
+      text-align: right;
+    }
+
+    /* --------------------------------------------------
+       6. 상세 팝업 (Modal)
+    -------------------------------------------------- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(42, 46, 69, 0.5);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      border: 3px solid var(--color-1);
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 1.3rem;
+      color: var(--text-sub);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .modal-img {
+      width: 100%;
+      max-height: 65vh;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- 1. 레트로 프로필 선택 화면 -->
+    <div id="profile-screen">
+      <div class="game-badge">@1n0n1ymemories</div>
+      <div class="brand-logo">ARCHIVE</div>
+      <div class="blink-text">▶ SELECT YOUR PLAYER</div>
+      
+      <div class="profile-grid">
+        <div class="profile-item" onclick="enterSite('Jane')">
+          <div class="profile-avatar">🤍</div>
+          <div class="profile-name">제인</div>
+          <div class="level-tag">___jane.e</div>
+        </div>
+        <div class="profile-item" onclick="enterSite('Yujin')">
+          <div class="profile-avatar">🩷</div>
+          <div class="profile-name">유진</div>
+          <div class="level-tag">h_yujin97</div>
+        </div>
+        <div class="profile-item" onclick="enterSite('Sehui')">
+          <div class="profile-avatar">🩵</div>
+          <div class="profile-name">세희</div>
+          <div class="level-tag">rhfolv</div>
+        </div>
+        <div class="profile-item" onclick="enterSite('Minsol')">
+          <div class="profile-avatar">🤎</div>
+          <div class="profile-name">민솔</div>
+          <div class="level-tag">losulw_24</div>
+        </div>
+        <div class="profile-item" onclick="enterSite('Jiwoo')">
+          <div class="profile-avatar">💚</div>
+          <div class="profile-name">지우</div>
+          <div class="level-tag">jjj.w___</div>
+        </div>
+
+        <div class="profile-item profile-add">
+          <div class="profile-avatar" style="color: var(--text-sub); font-size: 1rem;">+</div>
+          <div class="profile-name" style="color: var(--text-sub);">NEW</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 메인 게임 갤러리 화면 -->
+    <div id="main-content">
+      <header>
+        <div class="hud-box">
+          <div class="hud-player-info">
+            <span class="mini-title">PLAYER LOGGED IN</span>
+            <span class="main-title"><span id="welcome-msg">P1</span>'s Archive</span>
+          </div>
+          <div class="hud-status">
+            <span>🎮 STAGE 101</span>
+          </div>
+        </div>
+        <!-- 연도 빠른 이동 탭 (2019 -> 2026 -> Letter) -->
+      <nav class="year-nav">
+        <a href="#year-2021" class="year-tab">2021</a>
+        <a href="#year-2022" class="year-tab">2022</a>
+        <a href="#year-2023" class="year-tab">2023</a>
+        <a href="#year-2024" class="year-tab">2024</a>
+        <a href="#year-2025" class="year-tab">2025</a>
+        <a href="#year-2026" class="year-tab">2026</a>
+        <a href="#letter-section" class="year-tab letter-tab">💌</a>
+      </nav>
+      </header>
+
+      <!-- 타임라인 갤러리 영역 -->
+      <div class="gallery-container">
+
+       
+
+        <section id="year-2021" class="year-section">
+          <div class="year-header">
+            <div class="year-dot"></div>
+            <span>2021</span>
+          </div>
+          <div class="masonry-grid">
+            
+            <div class="photo-card" onclick="openModal('2021.11.28', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FBiw4r%2FdJMcahFj965%2FAAAAAAAAAAAAAAAAAAAAAEyWt_a8eInBQxt2uRn290rWO7YxtBCCFm_UHfGFjVfq%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dak7PfIO2A1u8Yegi%252BYifnwLX3MA%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FBiw4r%2FdJMcahFj965%2FAAAAAAAAAAAAAAAAAAAAAEyWt_a8eInBQxt2uRn290rWO7YxtBCCFm_UHfGFjVfq%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dak7PfIO2A1u8Yegi%252BYifnwLX3MA%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2021.11.28</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2021.11.28', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FrOxP2%2FdJMcahFj964%2FAAAAAAAAAAAAAAAAAAAAAKciCh1Z_M5JkgrsIAbIjsdjn0DcQQ0PWiVHTy1UMBVc%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DEKqmCWEGx4Y5xkvBhlFslMduG0o%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FrOxP2%2FdJMcahFj964%2FAAAAAAAAAAAAAAAAAAAAAKciCh1Z_M5JkgrsIAbIjsdjn0DcQQ0PWiVHTy1UMBVc%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DEKqmCWEGx4Y5xkvBhlFslMduG0o%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2021.11.28</div></div>
+        </div>
+
+          </div>
+        </section>
+
+        <section id="year-2022" class="year-section">
+          <div class="year-header">
+            <div class="year-dot"></div>
+            <span>2022</span>
+          </div>
+          <div class="masonry-grid">
+            
+            <div class="photo-card" onclick="openModal('2022.01.03', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FX50T0%2FdJMcagl7FQB%2FAAAAAAAAAAAAAAAAAAAAADXNFvyELO1FgXWdKBODjnlp8c75sPmQjXUynCiM6gzy%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DrWImgMEcsCY3lCSnix1TyFRVAO8%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FX50T0%2FdJMcagl7FQB%2FAAAAAAAAAAAAAAAAAAAAADXNFvyELO1FgXWdKBODjnlp8c75sPmQjXUynCiM6gzy%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DrWImgMEcsCY3lCSnix1TyFRVAO8%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2022.01.03</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2022.01.03', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcfN5XR%2FdJMcajwrWvc%2FAAAAAAAAAAAAAAAAAAAAAAjf-CtyD9jFicgiXcgvY2reQVXBTo5WTHs95hophvgT%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DumbTFcRx2GD8H2I2VzBWVdZxJow%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcfN5XR%2FdJMcajwrWvc%2FAAAAAAAAAAAAAAAAAAAAAAjf-CtyD9jFicgiXcgvY2reQVXBTo5WTHs95hophvgT%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DumbTFcRx2GD8H2I2VzBWVdZxJow%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2022.01.03</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2022.10.23', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fcgyy8d%2FdJMcacRwA8p%2FAAAAAAAAAAAAAAAAAAAAAEwtczxlzepJzHVqdWVQKDD9hqOpd-3bXI4IZ6ZxzJ-m%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dukb2pYwTyl6v8cOEggmy%252FpNoGb0%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fcgyy8d%2FdJMcacRwA8p%2FAAAAAAAAAAAAAAAAAAAAAEwtczxlzepJzHVqdWVQKDD9hqOpd-3bXI4IZ6ZxzJ-m%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dukb2pYwTyl6v8cOEggmy%252FpNoGb0%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2022.10.23</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2022.12.24', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fb4eqSE%2FdJMcacRwA8o%2FAAAAAAAAAAAAAAAAAAAAAFLkRUNupgXysO_bzjk8MCZBSWLeil6yneIS5UnIXGR7%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DBBrRlEAWkHsCjNlVs0UcZR90kYg%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fb4eqSE%2FdJMcacRwA8o%2FAAAAAAAAAAAAAAAAAAAAAFLkRUNupgXysO_bzjk8MCZBSWLeil6yneIS5UnIXGR7%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DBBrRlEAWkHsCjNlVs0UcZR90kYg%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2022.12.24</div><span class="item-tag">X-MAS EVE</span></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2022.12.24', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fw7TZK%2FdJMcahFj962%2FAAAAAAAAAAAAAAAAAAAAAMMArzgiRcMe8SvhxyEUzYYr_nNVyg70JHjowRXkqsYp%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D3BUHOVWR%252Ff1ObIKOsaN27LqbCk8%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fw7TZK%2FdJMcahFj962%2FAAAAAAAAAAAAAAAAAAAAAMMArzgiRcMe8SvhxyEUzYYr_nNVyg70JHjowRXkqsYp%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D3BUHOVWR%252Ff1ObIKOsaN27LqbCk8%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2022.12.24</div><span class="item-tag">X-MAS EVE</span></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2022.12.31', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FAXMOZ%2FdJMcaiRPKnz%2FAAAAAAAAAAAAAAAAAAAAAHxycyOmXGpoPAOGxnw8Ifc3DnFkKZE3W2u_0KFuaxxf%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dcd6NND7k%252FQKFJQ3LrB0GAJ4kk1E%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FAXMOZ%2FdJMcaiRPKnz%2FAAAAAAAAAAAAAAAAAAAAAHxycyOmXGpoPAOGxnw8Ifc3DnFkKZE3W2u_0KFuaxxf%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dcd6NND7k%252FQKFJQ3LrB0GAJ4kk1E%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2022.12.31</div><span class="item-tag">NY EVE</span></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2022.12.31', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbsysbo%2FdJMcahFj96X%2FAAAAAAAAAAAAAAAAAAAAAFmJCFuriUF8AeDYv51QA9PdRrYD2n3XCY9DPKI-W-XS%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DIa5iBT0LDlp90Wbd0YJmavW1vXQ%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbsysbo%2FdJMcahFj96X%2FAAAAAAAAAAAAAAAAAAAAAFmJCFuriUF8AeDYv51QA9PdRrYD2n3XCY9DPKI-W-XS%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DIa5iBT0LDlp90Wbd0YJmavW1vXQ%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2020.03.02'">
+          <div class="photo-info"><div class="photo-date">2022.12.31</div><span class="item-tag">NY EVE</span></div>
+        </div>
+        
+
+          </div>
+        </section>
+
+        <section id="year-2023" class="year-section">
+          <div class="year-header">
+            <div class="year-dot"></div>
+            <span>2023</span>
+          </div>
+          <div class="masonry-grid">
+            
+            <div class="photo-card" onclick="openModal('2023.03.11', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FVwhmq%2FdJMcaiRPKnA%2FAAAAAAAAAAAAAAAAAAAAAE9-Evr4orUJ4wOWWWBSSPSPhKMvXDDlmUIeIpCacZGA%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DiO6%252B2UwmOzngT33zjESF0swPWl4%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FVwhmq%2FdJMcaiRPKnA%2FAAAAAAAAAAAAAAAAAAAAAE9-Evr4orUJ4wOWWWBSSPSPhKMvXDDlmUIeIpCacZGA%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DiO6%252B2UwmOzngT33zjESF0swPWl4%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.03.11</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.03.11', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbn8VsX%2FdJMcaiRPKnB%2FAAAAAAAAAAAAAAAAAAAAAMBbqluf2DSCF5bQLMPIAy-ejkEBp29AbGfCFgYn_MbD%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D6deTcBJwrjei2To031JXVjpT6Iw%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbn8VsX%2FdJMcaiRPKnB%2FAAAAAAAAAAAAAAAAAAAAAMBbqluf2DSCF5bQLMPIAy-ejkEBp29AbGfCFgYn_MbD%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D6deTcBJwrjei2To031JXVjpT6Iw%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.03.11</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.05.13', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FBF2ot%2FdJMcajwrWva%2FAAAAAAAAAAAAAAAAAAAAAFs52CKWFG3z4FDEBuIcGaL1_9KmxwlMiVhPAR4eWQN3%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DVa%252FlfX2r7TsTTistgvroM7z6y2U%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FBF2ot%2FdJMcajwrWva%2FAAAAAAAAAAAAAAAAAAAAAFs52CKWFG3z4FDEBuIcGaL1_9KmxwlMiVhPAR4eWQN3%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DVa%252FlfX2r7TsTTistgvroM7z6y2U%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.05.13</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.05.13', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FUERJN%2FdJMcajwrWu9%2FAAAAAAAAAAAAAAAAAAAAACO7YfXq1iRDNf2ctZgED6xTEy6jBHAeW_gQl1CIMFFN%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DJji47o60LMqQLhipWnBUQvBMs2A%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FUERJN%2FdJMcajwrWu9%2FAAAAAAAAAAAAAAAAAAAAACO7YfXq1iRDNf2ctZgED6xTEy6jBHAeW_gQl1CIMFFN%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DJji47o60LMqQLhipWnBUQvBMs2A%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.05.13</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.07.09', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FdZU4MB%2FdJMcajwrWvb%2FAAAAAAAAAAAAAAAAAAAAAJA9GAbfLUtP8_HGzP1LA4_hD-K-LNxmu2y7CuZ2kqNp%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Do2rkG%252FyiPyZd8QIxrsCghemVQWc%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FdZU4MB%2FdJMcajwrWvb%2FAAAAAAAAAAAAAAAAAAAAAJA9GAbfLUtP8_HGzP1LA4_hD-K-LNxmu2y7CuZ2kqNp%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Do2rkG%252FyiPyZd8QIxrsCghemVQWc%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.07.09</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.07.09', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FnJ57M%2FdJMcagl7FQA%2FAAAAAAAAAAAAAAAAAAAAAJSBb3AhEhaI8esrR3Km2ewetDJAkZhOow2XnF9fHZcl%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D45tfH7MHYDYMhqzhI2eZKdvVS50%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FnJ57M%2FdJMcagl7FQA%2FAAAAAAAAAAAAAAAAAAAAAJSBb3AhEhaI8esrR3Km2ewetDJAkZhOow2XnF9fHZcl%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D45tfH7MHYDYMhqzhI2eZKdvVS50%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.07.09</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.10.29', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbiJ4N6%2FdJMcajwrWu8%2FAAAAAAAAAAAAAAAAAAAAAI6rvLchkjEL6IvuhFv_HR4B7SX1EDlrPeXeEvUe638x%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DjjYbuKQollLTWoRNseu9B2mX86Y%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbiJ4N6%2FdJMcajwrWu8%2FAAAAAAAAAAAAAAAAAAAAAI6rvLchkjEL6IvuhFv_HR4B7SX1EDlrPeXeEvUe638x%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DjjYbuKQollLTWoRNseu9B2mX86Y%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.10.29</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2023.10.29', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbhSKAK%2FdJMcajwrWu7%2FAAAAAAAAAAAAAAAAAAAAAK-oOzUWfAqqB69RGfGWeUkpfPl3_dhb4EaXqs8IkuE5%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DKBuoi8ok4cb2Ok71dlX%252F8b%252FnJw8%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbhSKAK%2FdJMcajwrWu7%2FAAAAAAAAAAAAAAAAAAAAAK-oOzUWfAqqB69RGfGWeUkpfPl3_dhb4EaXqs8IkuE5%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DKBuoi8ok4cb2Ok71dlX%252F8b%252FnJw8%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2022.01.01'">
+          <div class="photo-info"><div class="photo-date">2023.10.29</div></div>
+        </div>
+        
+        
+        <div class="photo-card" onclick="openModal('2023.12.29', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FboKNmW%2FdJMcaiRPKny%2FAAAAAAAAAAAAAAAAAAAAAE1ZCjPYoVCNHdwyYBR6I1dsRGlLCjE2AV--zTeb1D36%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DFD6Ecz9Cpz8HpACWCOrlKt2fGDs%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FboKNmW%2FdJMcaiRPKny%2FAAAAAAAAAAAAAAAAAAAAAE1ZCjPYoVCNHdwyYBR6I1dsRGlLCjE2AV--zTeb1D36%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DFD6Ecz9Cpz8HpACWCOrlKt2fGDs%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2023.12.29</div></div>
+        </div>
+
+          </div>
+        </section>
+
+        <section id="year-2024" class="year-section">
+          <div class="year-header">
+            <div class="year-dot"></div>
+            <span>2024</span>
+          </div>
+          <div class="masonry-grid">
+            
+            <div class="photo-card" onclick="openModal('2024.02.18', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fc4LHTv%2FdJMcahFj961%2FAAAAAAAAAAAAAAAAAAAAAE8MZAezN96bA4I2R6YJwTm0ywgBx4oR_1m1U2X2Yjdw%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DxIlF9ySUwD89H37zL14wGpcY1K0%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fc4LHTv%2FdJMcahFj961%2FAAAAAAAAAAAAAAAAAAAAAE8MZAezN96bA4I2R6YJwTm0ywgBx4oR_1m1U2X2Yjdw%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DxIlF9ySUwD89H37zL14wGpcY1K0%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2024.02.18</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.02.18', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbt7UHs%2FdJMcafgwOP6%2FAAAAAAAAAAAAAAAAAAAAAGG7PKTW5ES9XDMY25eLN0xA0paMcLpafXocjoZz-cwu%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D4tAtr%252BwZRAemPmcjvFYnKXWEMZM%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbt7UHs%2FdJMcafgwOP6%2FAAAAAAAAAAAAAAAAAAAAAGG7PKTW5ES9XDMY25eLN0xA0paMcLpafXocjoZz-cwu%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D4tAtr%252BwZRAemPmcjvFYnKXWEMZM%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2024.02.18</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.06.08', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcxbvEw%2FdJMcah6v6PW%2FAAAAAAAAAAAAAAAAAAAAAHCTYCVT26p0Ui-VukIPCiw2qIgdWP6xv9J5BcafcfnI%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DwR4XsdIGvs6%252BR7I3RkTdNCuyWww%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcxbvEw%2FdJMcah6v6PW%2FAAAAAAAAAAAAAAAAAAAAAHCTYCVT26p0Ui-VukIPCiw2qIgdWP6xv9J5BcafcfnI%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DwR4XsdIGvs6%252BR7I3RkTdNCuyWww%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2024.08.15'">
+          <div class="photo-info"><div class="photo-date">2024.06.08</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.06.08', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbJhfxl%2FdJMcaa0w7Cr%2FAAAAAAAAAAAAAAAAAAAAAMqyMcAxxXzj1UbSqKKjQnWcJqHexCCKsYkaXJ_AqwGq%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DUzGmeStOqnIuXuvLHUIgTcqMDE0%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbJhfxl%2FdJMcaa0w7Cr%2FAAAAAAAAAAAAAAAAAAAAAMqyMcAxxXzj1UbSqKKjQnWcJqHexCCKsYkaXJ_AqwGq%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DUzGmeStOqnIuXuvLHUIgTcqMDE0%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2021.07.10'">
+          <div class="photo-info"><div class="photo-date">2024.06.08</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.11.15', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fdzw7JN%2FdJMcaidinfh%2FAAAAAAAAAAAAAAAAAAAAANqUHGpUvIk7u7H8YtTg9JBtFarNGpUp3lfx1iB33JI4%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DV3Fx8%252B5E%252FK0c2%252B0DAKl5jN2EFFw%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fdzw7JN%2FdJMcaidinfh%2FAAAAAAAAAAAAAAAAAAAAANqUHGpUvIk7u7H8YtTg9JBtFarNGpUp3lfx1iB33JI4%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DV3Fx8%252B5E%252FK0c2%252B0DAKl5jN2EFFw%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2024.11.15</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.11.15', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FN8QZF%2FdJMcabE6HZN%2FAAAAAAAAAAAAAAAAAAAAABGqpNXgndH7-bxSXqKTEwZEOZ--0VoQVKvDO_MgWT_s%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DGgtOpIoijIJj4irSho%252BZKQPmbGs%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FN8QZF%2FdJMcabE6HZN%2FAAAAAAAAAAAAAAAAAAAAABGqpNXgndH7-bxSXqKTEwZEOZ--0VoQVKvDO_MgWT_s%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DGgtOpIoijIJj4irSho%252BZKQPmbGs%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2024.11.15</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.11.17', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FedYX1h%2FdJMcah6v6PX%2FAAAAAAAAAAAAAAAAAAAAAL-yiYX_UJ_JZohhV7FmiMX6cf1x2BMF7q6xqAQVnP97%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DU%252B%252F2mHrukVZ3VeqjuqkJA4hHsqQ%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FedYX1h%2FdJMcah6v6PX%2FAAAAAAAAAAAAAAAAAAAAAL-yiYX_UJ_JZohhV7FmiMX6cf1x2BMF7q6xqAQVnP97%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DU%252B%252F2mHrukVZ3VeqjuqkJA4hHsqQ%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2024.08.15'">
+          <div class="photo-info"><div class="photo-date">2024.11.17</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2024.11.17', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FHOWq6%2FdJMcah6v6P0%2FAAAAAAAAAAAAAAAAAAAAAP839ABE0Qqr2zlHFfvqYFTMH-HiLGLtmyvqn0ouTy4M%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DzB5crDUkW413EeDoEtDT0vSLFkE%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FHOWq6%2FdJMcah6v6P0%2FAAAAAAAAAAAAAAAAAAAAAP839ABE0Qqr2zlHFfvqYFTMH-HiLGLtmyvqn0ouTy4M%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DzB5crDUkW413EeDoEtDT0vSLFkE%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2024.08.15'">
+          <div class="photo-info"><div class="photo-date">2024.11.17</div></div>
+        </div>
+
+          </div>
+        </section>
+
+        <section id="year-2025" class="year-section">
+          <div class="year-header">
+            <div class="year-dot"></div>
+            <span>2025</span>
+          </div>
+          <div class="masonry-grid">
+            <div class="photo-card" onclick="openModal('2025.01.01', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbSyNw0%2FdJMcai5gpJM%2FAAAAAAAAAAAAAAAAAAAAAL7ftRn7rQgUIZPlG9-L_5CUc3UpPp9REKwZ-GK7xRpl%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DZ1pl2Wyqem7zga%252F%252BoXYcL8rkcu0%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbSyNw0%2FdJMcai5gpJM%2FAAAAAAAAAAAAAAAAAAAAAL7ftRn7rQgUIZPlG9-L_5CUc3UpPp9REKwZ-GK7xRpl%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DZ1pl2Wyqem7zga%252F%252BoXYcL8rkcu0%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.01.01</div><span class="item-tag">NEW YEAR</span></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2025.12.06', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcWrBxY%2FdJMcai5gpJO%2FAAAAAAAAAAAAAAAAAAAAAP8OLBywcxwCFpernqtoSHAVBY3PcQWi6YLCFhT0v4pp%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D%252BhOOwjb48gdkNuytb533qLvIGmo%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcWrBxY%2FdJMcai5gpJO%2FAAAAAAAAAAAAAAAAAAAAAP8OLBywcxwCFpernqtoSHAVBY3PcQWi6YLCFhT0v4pp%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D%252BhOOwjb48gdkNuytb533qLvIGmo%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.12.06</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2025.12.06', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcEseU9%2FdJMcai5gpJP%2FAAAAAAAAAAAAAAAAAAAAAFg-7b26ftwyiA8_Mjy5s9LUVZRLclFXFBsKD_TmO1A4%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Doh7safICAC%252BngOsz98UjZVnrP7o%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FcEseU9%2FdJMcai5gpJP%2FAAAAAAAAAAAAAAAAAAAAAFg-7b26ftwyiA8_Mjy5s9LUVZRLclFXFBsKD_TmO1A4%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Doh7safICAC%252BngOsz98UjZVnrP7o%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.12.06</div></div>
+        </div>
+        
+        <div class="photo-card" onclick="openModal('2025.12.06', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbDdkOL%2FdJMcah6v6P1%2FAAAAAAAAAAAAAAAAAAAAAHt2W-azFIPoxnOVu35CH0eUGdOCIUy9b04XKiAYY5iF%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DpgdoUzZYhV7vYbyySkotX6GiC0Y%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbDdkOL%2FdJMcah6v6P1%2FAAAAAAAAAAAAAAAAAAAAAHt2W-azFIPoxnOVu35CH0eUGdOCIUy9b04XKiAYY5iF%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DpgdoUzZYhV7vYbyySkotX6GiC0Y%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.12.06</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2025.12.07', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FccYJrq%2FdJMcah6v6PU%2FAAAAAAAAAAAAAAAAAAAAAOD0P1TuQ3EMu__ZXiYzKDgDeYKLzcyByYI-AH86ZTMF%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D0ODmf3SAStR4P%252FEfszhCkE1ed14%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FccYJrq%2FdJMcah6v6PU%2FAAAAAAAAAAAAAAAAAAAAAOD0P1TuQ3EMu__ZXiYzKDgDeYKLzcyByYI-AH86ZTMF%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D0ODmf3SAStR4P%252FEfszhCkE1ed14%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.12.07</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2025.12.07', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F9mWAa%2FdJMcai5gpJL%2FAAAAAAAAAAAAAAAAAAAAADn8ZBPsGlCdMw3R0RYv1NgOeFL2KT0fuoD2IyVzRlDy%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DbLduevqP2cycPugZiY1hNQ3JbtQ%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2F9mWAa%2FdJMcai5gpJL%2FAAAAAAAAAAAAAAAAAAAAADn8ZBPsGlCdMw3R0RYv1NgOeFL2KT0fuoD2IyVzRlDy%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DbLduevqP2cycPugZiY1hNQ3JbtQ%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.12.07</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2025.12.07', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FFRjkR%2FdJMcah6v6PV%2FAAAAAAAAAAAAAAAAAAAAADaKFUzjQPaEL1OHVaMgnCIYoggl2x_45b9yXfByxRwj%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D24p%252BjJarJL8Nvg6HuR5iKh4bQkM%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FFRjkR%2FdJMcah6v6PV%2FAAAAAAAAAAAAAAAAAAAAADaKFUzjQPaEL1OHVaMgnCIYoggl2x_45b9yXfByxRwj%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D24p%252BjJarJL8Nvg6HuR5iKh4bQkM%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2025.12.07</div></div>
+        </div>
+            
+
+          </div>
+        </section>
+
+        <!-- 2026년 -->
+        <section id="year-2026" class="year-section">
+          <div class="year-header">
+            <div class="year-dot"></div>
+            <span>2026</span>
+          </div>
+          <div class="masonry-grid">
+
+            <div class="photo-card" onclick="openModal('2026.01.01', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbd7cAO%2FdJMcai5gpJN%2FAAAAAAAAAAAAAAAAAAAAAL71qL9Xf-1VaVGRzCA7VPNL-HRATH0TfCfuVBSFzE2j%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dbii05YL5Ul8XK8POZrO1KtNHcV4%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fbd7cAO%2FdJMcai5gpJN%2FAAAAAAAAAAAAAAAAAAAAAL71qL9Xf-1VaVGRzCA7VPNL-HRATH0TfCfuVBSFzE2j%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dbii05YL5Ul8XK8POZrO1KtNHcV4%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2026.01.01</div><span class="item-tag">NEW YEAR</span></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2026.01.20', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fcn6LZJ%2FdJMcah6v6PZ%2FAAAAAAAAAAAAAAAAAAAAAM89Kcghoj8J7__YW9rsRmochGMzvQpsYw0DEG55TvHU%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DA8RV%252BC6aBCUjCsVvFuZkISD%252F1w8%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2Fcn6LZJ%2FdJMcah6v6PZ%2FAAAAAAAAAAAAAAAAAAAAAM89Kcghoj8J7__YW9rsRmochGMzvQpsYw0DEG55TvHU%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DA8RV%252BC6aBCUjCsVvFuZkISD%252F1w8%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2026.01.20</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2026.02.18', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FmFJvA%2FdJMcahSOQXM%2FAAAAAAAAAAAAAAAAAAAAALRTnKUH7s6OVxePBwn3J8bFM88L_zic1Hpez9r1QNef%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D4607FJoHLzg8at7yhoE1Db5fI4Q%253D', 'https://youtube.com/shorts/O3xAR1rwDAk')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FmFJvA%2FdJMcahSOQXM%2FAAAAAAAAAAAAAAAAAAAAALRTnKUH7s6OVxePBwn3J8bFM88L_zic1Hpez9r1QNef%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3D4607FJoHLzg8at7yhoE1Db5fI4Q%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2026.02.18</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2026.05.23', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FHEoOu%2FdJMcah6v6PY%2FAAAAAAAAAAAAAAAAAAAAACtQetLB4f_XclMkUgA64xY74cHMddCKxdy_KnTg371h%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DnLoOeWliCg3nRxFdVKGj9UN3bls%253D', '')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FHEoOu%2FdJMcah6v6PY%2FAAAAAAAAAAAAAAAAAAAAACtQetLB4f_XclMkUgA64xY74cHMddCKxdy_KnTg371h%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3DnLoOeWliCg3nRxFdVKGj9UN3bls%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2023.05.05'">
+          <div class="photo-info"><div class="photo-date">2026.05.23</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2026.08.03', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FUFXlu%2FdJMcacjIeGY%2FAAAAAAAAAAAAAAAAAAAAAJnBIK-jBsBkUXr1BwBT2iHHlaZKxFBv2UNOiEKKXBME%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dp2xsWo6zJ2u2svwT2BOfgbTSfa0%253D', 'videos/2026_0803_1.mp4')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FUFXlu%2FdJMcacjIeGY%2FAAAAAAAAAAAAAAAAAAAAAJnBIK-jBsBkUXr1BwBT2iHHlaZKxFBv2UNOiEKKXBME%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dp2xsWo6zJ2u2svwT2BOfgbTSfa0%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2026.08.03'">
+          <div class="photo-info"><div class="photo-date">2026.08.03</div></div>
+        </div>
+        <div class="photo-card" onclick="openModal('2026.08.03', 'https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FPwOnQ%2FdJMcaa7n3e6%2FAAAAAAAAAAAAAAAAAAAAAKzs4n40MFQ0KyA42M_a9iG8ApVbUzaCZtpOmpcnmptP%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dya3LxNRi4Gnr3JUy1w57JoMCu9w%253D', 'videos/2026_0803_2.mp4')">
+          <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FPwOnQ%2FdJMcaa7n3e6%2FAAAAAAAAAAAAAAAAAAAAAKzs4n40MFQ0KyA42M_a9iG8ApVbUzaCZtpOmpcnmptP%2Fimg.jpg%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1788188399%26allow_ip%3D%26allow_referer%3D%26signature%3Dya3LxNRi4Gnr3JUy1w57JoMCu9w%253D" alt="인생네컷" onerror="this.src='https://via.placeholder.com/300x600/222/fff?text=2025.10.31'">
+          <div class="photo-info"><div class="photo-date">2026.08.03</div></div>
+        </div>
+
+          </div>
+        </section>
+
+        <!-- 개발자 편지 (Ending Note) 섹션 -->
+        <section id="letter-section" class="letter-section">
+          <div class="letter-card">
+            <div class="letter-title">
+              <span>💌 Merry Christmas!</span>
+            </div>
+            <div class="letter-body">
+              여름방학부터 틈틈이 작업했는데 이제야 보여주게 됐네. 열심히 만든 내 정성을 알아줘 ㅎㅎ 틀린 날짜 있을 수도 있음! 그리고 나 없는 4인 사진도 제보 받음. 계속 업데이트 예정~ 
+            </div>
+            <div class="letter-footer">
+              — Designed & Developed by SC
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- 3. 상세 사진 모달 -->
+    <div id="modal" class="modal" onclick="closeModalOnBg(event)">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h3 id="modal-date" style="margin-bottom: 12px; font-size: 0.85rem; color: var(--text-sub); text-align: center; font-weight: 700;"></h3>
+        <img id="modal-img" class="modal-img" src="" alt="상세 사진">
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 1. 연도 탭 클릭 시 active 클래스 이동
+document.querySelectorAll('.year-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// 2. 스크롤할 때 현재 화면에 보이는 연도 섹션의 탭을 자동으로 active 처리
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -60% 0px', // 화면 중간쯤 위치할 때 인식
+  threshold: 0
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      document.querySelectorAll('.year-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('href') === `#${id}`) {
+          tab.classList.add('active');
+        }
+      });
+    }
+  });
+}, observerOptions);
+
+// 메인 화면 진입 시 감지 대상(연도 섹션 & 편지 섹션) 등록
+function initScrollObserver() {
+  document.querySelectorAll('.year-section, .letter-section').forEach(section => {
+    observer.observe(section);
+  });
+}
+
+// enterSite 함수 내부 마지막 줄에 initScrollObserver() 호출을 추가해 주세요.
+function enterSite(name) {
+  document.getElementById('profile-screen').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('welcome-msg').innerText = name;
+  window.scrollTo(0, 0);
+  initScrollObserver(); // 스크롤 감지 시작
+}
+
+    function openModal(date, imgSrc) {
+      document.getElementById('modal-date').innerText = date;
+      document.getElementById('modal-img').src = imgSrc;
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function closeModalOnBg(e) {
+      if (e.target.id === 'modal') {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>
