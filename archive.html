@@ -35,7 +35,7 @@
     body {
       background-color: #1c1c1e;
       color: var(--text-main);
-      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,7 +47,7 @@
     .iphone-wrapper {
       width: 100%;
       max-width: 430px;
-      height: 100vh;
+      height: 100dvh;
       max-height: 932px;
       background: var(--ios-bg);
       position: relative;
@@ -200,7 +200,7 @@
       width: 100%;
       height: 100%;
       padding-top: 50px;
-      padding-bottom: 80px;
+      padding-bottom: calc(85px + env(safe-area-inset-bottom));
     }
 
     /* iOS Navigation Header Bar */
@@ -372,13 +372,13 @@
     .ios-tab-bar {
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: 70px;
       background: var(--ios-blur-bg);
       backdrop-filter: blur(20px);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       display: flex;
       justify-content: space-around;
-      padding-top: 8px;
+      padding-top: 10px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
       z-index: 400;
     }
 
