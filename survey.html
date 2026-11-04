@@ -6,16 +6,16 @@
   <title>현장 설문조사</title>
   <style>
   :root {
-    --bg-color: #faf7f2;          /* 은은한 웜 베이지 톤 배경 */
-    --card-bg: #ffffff;
-    --primary: #7d967e;
-  --primary-hover: #6a826b;
-  --selected-bg: #f2f7f2;
-  --selected-border: #a4bfa5;
-  --border-color: #e5ede5;     /* 자연스러운 미색 테두리 */
-    --selected-bg: #fdf3ed;      /* 은은한 피치 틴트 선택 배경 */
-    --selected-border: #e3a996;  /* 따뜻한 테라코타 로즈 포인트 테두리 */
-  }
+  --bg-color: #f4f6f3;          /* 은은하고 편안한 미색 세이지 베이스 배경 */
+  --card-bg: #ffffff;
+  --primary: #7d967e;          /* 차분하고 포근한 세이지 그린 메인 버튼 */
+  --primary-hover: #6a826b;    /* 탭/호버 시 살짝 짙어지는 딥 포레스트 그린 */
+  --text-main: #2b332c;        /* 눈이 편안한 딥 올리브 차콜 텍스트 */
+  --text-sub: #788579;         /* 부드러운 뮤트 세이지 서브 텍스트 */
+  --border-color: #e3ebe3;     /* 연하고 자연스러운 그리너리 테두리 */
+  --selected-bg: #f0f5f0;      /* 선택 시 은은하게 맴도는 세이지 틴트 */
+  --selected-border: #9cb59d;  /* 선택 시 테두리 강조선 */
+}
 
   * {
     box-sizing: border-box;
@@ -33,55 +33,57 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 24px 16px;
+    padding: 32px 24px;
   }
 
+  /* 아이패드 화면에 맞춰 폭(max-width)과 내부 패딩 확장 */
   .kiosk-container {
     background: var(--card-bg);
-    border-radius: 28px;
-    box-shadow: 0 12px 36px rgba(189, 168, 153, 0.12);
+    border-radius: 36px;
+    box-shadow: 0 16px 48px rgba(189, 168, 153, 0.16);
     width: 100%;
-    max-width: 520px;
-    padding: 42px 32px;
+    max-width: 720px;            /* 기존 520px -> 720px로 확장 */
+    padding: 56px 48px;          /* 내부 패딩 넉넉하게 확장 */
     border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
   }
 
   .survey-header {
-    margin-bottom: 32px;
+    margin-bottom: 42px;
     text-align: center;
   }
 
   .survey-header h1 {
-    font-size: 1.6rem;
+    font-size: 2.1rem;           /* 메인 타이틀 크기 확대 */
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     color: var(--text-main);
   }
 
   .survey-header p {
-    font-size: 0.95rem;
+    font-size: 1.15rem;          /* 부제 설명문 확대 */
     color: var(--text-sub);
   }
 
   .question-group {
-    margin-bottom: 32px;
+    margin-bottom: 40px;
   }
 
   .question-title {
-    font-size: 1.05rem;
+    font-size: 1.3rem;           /* 질문 라벨 확대 */
     font-weight: 600;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
     display: block;
     color: var(--text-main);
   }
 
+  /* 행복 유지 시간 그리드 (간격 및 터치 영역 확대) */
   .chip-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 14px;
   }
 
   .chip-label {
@@ -96,10 +98,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 48px;
-    border: 1.5px solid var(--border-color);
-    border-radius: 14px;
-    font-size: 0.95rem;
+    height: 64px;                /* 기존 48px -> 64px로 시원하게 터치 가능 */
+    border: 1.8px solid var(--border-color);
+    border-radius: 18px;
+    font-size: 1.15rem;          /* 글자 크기 확대 */
     color: var(--text-main);
     background-color: #fff;
     transition: all 0.18s ease;
@@ -111,43 +113,45 @@
     background-color: var(--selected-bg);
     color: var(--primary);
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(201, 138, 117, 0.12);
+    box-shadow: 0 4px 12px rgba(201, 138, 117, 0.16);
   }
 
+  /* 1-10 행복 강도 (간격 및 버튼 크기 확대) */
   .intensity-scale {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
+    gap: 8px;
   }
 
   .intensity-box {
-    height: 50px;
-    border-radius: 12px;
-    font-size: 1rem;
+    height: 66px;                /* 세로 길이 시원하게 확대 */
+    border-radius: 14px;
+    font-size: 1.25rem;          /* 숫자 크기 확대 */
   }
 
   .intensity-legend {
     display: flex;
     justify-content: space-between;
-    font-size: 0.82rem;
+    font-size: 0.95rem;          /* 안내 문구 확대 */
     color: var(--text-sub);
-    margin-top: 10px;
-    padding: 0 4px;
+    margin-top: 14px;
+    padding: 0 6px;
   }
 
+  /* 하단 제출 버튼 */
   .submit-btn {
     width: 100%;
-    height: 54px;
+    height: 68px;                /* 터치하기 편한 묵직한 높이 */
     background-color: var(--primary);
     color: #ffffff;
     border: none;
-    border-radius: 16px;
-    font-size: 1.05rem;
-    font-weight: 600;
+    border-radius: 20px;
+    font-size: 1.25rem;          /* 버튼 글자 확대 */
+    font-weight: 700;
     cursor: pointer;
     transition: background-color 0.18s ease, transform 0.1s ease, opacity 0.15s ease;
-    margin-top: 10px;
-    box-shadow: 0 4px 14px rgba(201, 138, 117, 0.25);
+    margin-top: 14px;
+    box-shadow: 0 6px 18px rgba(125, 150, 126, 0.28);
   }
 
   .submit-btn:hover:not(:disabled) {
@@ -168,42 +172,42 @@
   .complete-screen {
     display: none;
     text-align: center;
-    padding: 50px 20px 40px;
+    padding: 70px 20px 50px;
   }
 
   .complete-icon {
-    width: 58px;
-    height: 58px;
+    width: 72px;                 /* 체크 아이콘 확대 */
+    height: 72px;
     background-color: #fbede6;
     color: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
-    margin: 0 auto 20px;
+    font-size: 32px;
+    margin: 0 auto 24px;
   }
 
   .complete-screen h2 {
-    font-size: 1.5rem;
+    font-size: 1.9rem;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     color: var(--text-main);
   }
 
   .complete-screen p {
-    font-size: 0.95rem;
+    font-size: 1.15rem;
     color: var(--text-sub);
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  /* 자동 복귀 게이지 바 */
+  /* 하단 복귀 게이지 바 */
   .reset-progress-track {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 5px;
+    height: 6px;
     background: #f5efe8;
     display: none;
   }
