@@ -144,10 +144,7 @@
     transition: opacity 0.2s ease;
   }
 
-  .custom-inputs-wrapper.disabled {
-    opacity: 0.35;
-    pointer-events: none;
-  }
+  
 
   /* 숫자 입력창 (위아래 화살표 스피너 제거) */
   .custom-num-input {
@@ -358,13 +355,13 @@
             <div class="chip-box">직접 입력</div>
           </label>
           
-          <div class="custom-inputs-wrapper disabled" id="customInputsWrapper">
-            <input type="number" id="customNumber" class="custom-num-input" placeholder="숫자" min="1" max="999" disabled>
+          <div class="custom-inputs-wrapper" id="customInputsWrapper">
+            <input type="number" id="customNumber" class="custom-num-input" placeholder="숫자" min="1" max="999">
             
             <!-- 좌우 분/시간 선택 버튼 -->
             <div class="unit-toggle-group">
-              <button type="button" class="unit-btn active" data-unit="분" id="unitMinBtn" disabled>분</button>
-              <button type="button" class="unit-btn" data-unit="시간" id="unitHourBtn" disabled>시간</button>
+              <button type="button" class="unit-btn active" data-unit="분" id="unitMinBtn">분</button>
+              <button type="button" class="unit-btn" data-unit="시간" id="unitHourBtn">시간</button>
             </div>
           </div>
         </div>
@@ -408,141 +405,135 @@
   </div>
 
   <script>
-    // 본인의 Google Apps Script 웹 앱 URL 입력
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmQf58_ffcBFygGJWxc-tt5DNlGIj2wgL_B-qYrkC27A9lPkRcE2yjNYfDaeVOZlP4IA/exec';
+  // 본인의 Google Apps Script 웹 앱 URL 입력
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmQf58_ffcBFygGJWxc-tt5DNlGIj2wgL_B-qYrkC27A9lPkRcE2yjNYfDaeVOZlP4IA/exec';
 
-    const form = document.getElementById('happinessForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const completeScreen = document.getElementById('completeScreen');
-    const progressTrack = document.getElementById('progressTrack');
-    const progressBar = document.getElementById('progressBar');
+  const form = document.getElementById('happinessForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const completeScreen = document.getElementById('completeScreen');
+  const progressTrack = document.getElementById('progressTrack');
+  const progressBar = document.getElementById('progressBar');
 
-    // 직접 입력 관련 요소
-    const durationRadios = document.querySelectorAll('input[name="duration"]');
-    const customRadio = document.getElementById('customDurationRadio');
-    const customWrapper = document.getElementById('customInputsWrapper');
-    const customNumber = document.getElementById('customNumber');
-    const unitButtons = document.querySelectorAll('.unit-btn');
-    
-    let selectedUnit = '분'; // 기본값
+  // 직접 입력 관련 요소들
+  const durationRadios = document.querySelectorAll('input[name="duration"]');
+  const customRadio = document.getElementById('customDurationRadio');
+  const customNumber = document.getElementById('customNumber');
+  const unitButtons = document.querySelectorAll('.unit-btn');
 
-    // 분 / 시간 토글 버튼 이벤트
-    unitButtons.forEach(btn => {
-      btn.addEventListener('click', function() {
-        unitButtons.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        selectedUnit = this.getAttribute('data-unit');
-      });
+  let selectedUnit = '분'; // 기본 단위
+
+  // 1. 숫자 입력 칸을 터치하면 '직접 입력' 라디오가 자동으로 켜짐
+  customNumber.addEventListener('focus', function() {
+    customRadio.checked = true;
+  });
+
+  // 2. 분 / 시간 버튼을 누르면 해당 버튼이 켜지고, '직접 입력' 라디오도 자동으로 켜짐
+  unitButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      unitButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      selectedUnit = this.getAttribute('data-unit');
+      customRadio.checked = true; // 단위 버튼을 눌러도 직접 입력으로 자동 전환
     });
+  });
 
-    // 직접 입력 라디오 선택 시 인풋 활성화 / 비활성화 처리
-    durationRadios.forEach(radio => {
-      radio.addEventListener('change', function() {
-        if (customRadio.checked) {
-          customWrapper.classList.remove('disabled');
-          customNumber.disabled = false;
-          unitButtons.forEach(b => b.disabled = false);
-          customNumber.focus();
-        } else {
-          customWrapper.classList.add('disabled');
-          customNumber.disabled = true;
-          unitButtons.forEach(b => b.disabled = true);
-          customNumber.value = '';
-        }
-      });
-    });
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      let finalDuration = '';
-
-      // 직접 입력이 선택된 경우
-      if (customRadio.checked) {
-        const numVal = customNumber.value.trim();
-        if (!numVal) {
-          alert('유지 시간 숫자를 입력해 주세요.');
-          customNumber.focus();
-          return;
-        }
-        finalDuration = `${numVal}${selectedUnit}`;
-      } else {
-        const selectedRadio = document.querySelector('input[name="duration"]:checked');
-        if (selectedRadio) {
-          finalDuration = selectedRadio.value;
-        }
-      }
-
-      const selectedIntensity = document.querySelector('input[name="intensity"]:checked')?.value || '';
-
-      // 전송용 FormData 구성
-      const submitData = new FormData();
-      submitData.append('duration', finalDuration);
-      submitData.append('intensity', selectedIntensity);
-
-      // 연타 방지
-      submitBtn.disabled = true;
-      submitBtn.innerText = '저장 중...';
-
-      // 구글 시트로 백그라운드 전송
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: submitData,
-        mode: 'no-cors'
-      })
-      .then(() => {
-        showCompleteAndReset();
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('네트워크 연결을 확인해 주세요.');
-        submitBtn.disabled = false;
-        submitBtn.innerText = '설문 제출 ✔️';
-      });
-    });
-
-    function showCompleteAndReset() {
-      // 1. 폼 숨기고 완료 화면 및 게이지 표시
-      form.style.display = 'none';
-      completeScreen.style.display = 'block';
-      progressTrack.style.display = 'block';
-
-      // 2. 게이지 애니메이션 시작 (2.5초 동안 차오름)
-      setTimeout(() => {
-        progressBar.style.width = '100%';
-      }, 50);
-
-      // 3. 2.5초 후 초기화하여 다음 사람 맞이
-      setTimeout(() => {
-        form.reset(); // 모든 라디오 및 인풋 초기화
-
-        // 직접 입력창 상태 및 단위 버튼 초기화
-        customWrapper.classList.add('disabled');
-        customNumber.disabled = true;
+  // 3. 상단 8개 기본 버튼(10초~30분+)을 누르면 입력창에 적혀 있던 숫자 비우기
+  durationRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (!customRadio.checked) {
         customNumber.value = '';
-        unitButtons.forEach(b => {
-          b.disabled = true;
-          b.classList.remove('active');
-        });
-        document.getElementById('unitMinBtn').classList.add('active');
-        selectedUnit = '분';
+      }
+    });
+  });
 
-        submitBtn.disabled = false;
-        submitBtn.innerText = '설문 제출 ✔️';
+  // 4. 설문 제출 버튼 클릭 시 데이터 전송
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
 
-        progressBar.style.transition = 'none';
-        progressBar.style.width = '0%';
-        progressTrack.style.display = 'none';
+    let finalDuration = '';
 
-        completeScreen.style.display = 'none';
-        form.style.display = 'block';
-
-        // 게이지 애니메이션 복원
-        setTimeout(() => {
-          progressBar.style.transition = 'width 2.5s linear';
-        }, 50);
-      }, 2500);
+    // '직접 입력'이 선택된 상태라면 숫자와 단위를 합침 (예: 15분, 2시간)
+    if (customRadio.checked) {
+      const numVal = customNumber.value.trim();
+      if (!numVal) {
+        alert('유지 시간 숫자를 입력해 주세요.');
+        customNumber.focus();
+        return;
+      }
+      finalDuration = `${numVal}${selectedUnit}`;
+    } else {
+      // 상단 프리셋 버튼이 선택된 경우
+      const selectedRadio = document.querySelector('input[name="duration"]:checked');
+      if (selectedRadio) {
+        finalDuration = selectedRadio.value;
+      }
     }
-  </script>
+
+    const selectedIntensity = document.querySelector('input[name="intensity"]:checked')?.value || '';
+
+    // 구글 시트로 보낼 데이터 포장
+    const submitData = new FormData();
+    submitData.append('duration', finalDuration);
+    submitData.append('intensity', selectedIntensity);
+
+    // 중복 터치 방지
+    submitBtn.disabled = true;
+    submitBtn.innerText = '저장 중...';
+
+    // 구글 스프레드시트로 전송
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: submitData,
+      mode: 'no-cors'
+    })
+    .then(() => {
+      showCompleteAndReset();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('네트워크 연결을 확인해 주세요.');
+      submitBtn.disabled = false;
+      submitBtn.innerText = '설문 제출 ✔️';
+    });
+  });
+
+  // 5. 완료 화면 노출 후 다음 사람을 위한 자동 초기화 함수
+  function showCompleteAndReset() {
+    form.style.display = 'none';
+    completeScreen.style.display = 'block';
+    progressTrack.style.display = 'block';
+
+    // 게이지 바 애니메이션 시작 (2.5초)
+    setTimeout(() => {
+      progressBar.style.width = '100%';
+    }, 50);
+
+    // 2.5초 후 폼을 깨끗이 비우고 첫 화면으로 복귀
+    setTimeout(() => {
+      form.reset(); // 모든 선택 초기화
+
+      // 숫자 칸과 단위 버튼 기본값 복원
+      customNumber.value = '';
+      unitButtons.forEach(b => b.classList.remove('active'));
+      document.getElementById('unitMinBtn').classList.add('active');
+      selectedUnit = '분';
+
+      submitBtn.disabled = false;
+      submitBtn.innerText = '설문 제출 ✔️';
+
+      progressBar.style.transition = 'none';
+      progressBar.style.width = '0%';
+      progressTrack.style.display = 'none';
+
+      completeScreen.style.display = 'none';
+      form.style.display = 'block';
+
+      // 게이지 바 복원
+      setTimeout(() => {
+        progressBar.style.transition = 'width 2.5s linear';
+      }, 50);
+    }, 2500);
+  }
+</script>
 </body>
 </html>
