@@ -5,203 +5,216 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>현장 설문조사</title>
   <style>
-    :root {
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --primary: #4a6fa5;
-      --primary-hover: #3b5982;
-      --text-main: #1e293b;
-      --text-sub: #64748b;
-      --border-color: #e2e8f0;
-      --selected-bg: #eff6ff;
-      --selected-border: #3b82f6;
-    }
+  :root {
+    --bg-color: #faf7f2;          /* 은은한 웜 베이지 톤 배경 */
+    --card-bg: #ffffff;
+    --primary: #7d967e;
+  --primary-hover: #6a826b;
+  --selected-bg: #f2f7f2;
+  --selected-border: #a4bfa5;
+  --border-color: #e5ede5;     /* 자연스러운 미색 테두리 */
+    --selected-bg: #fdf3ed;      /* 은은한 피치 틴트 선택 배경 */
+    --selected-border: #e3a996;  /* 따뜻한 테라코타 로즈 포인트 테두리 */
+  }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none; /* 부스 터치 시 텍스트 드래그 방지 */
-    }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 24px 16px;
-    }
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
 
-    .kiosk-container {
-      background: var(--card-bg);
-      border-radius: 24px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
-      width: 100%;
-      max-width: 520px;
-      padding: 40px 32px;
-      border: 1px solid var(--border-color);
-      position: relative;
-      overflow: hidden;
-    }
+  .kiosk-container {
+    background: var(--card-bg);
+    border-radius: 28px;
+    box-shadow: 0 12px 36px rgba(189, 168, 153, 0.12);
+    width: 100%;
+    max-width: 520px;
+    padding: 42px 32px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+  }
 
-    .survey-header {
-      margin-bottom: 32px;
-      text-align: center;
-    }
+  .survey-header {
+    margin-bottom: 32px;
+    text-align: center;
+  }
 
-    .survey-header h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-    }
+  .survey-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: var(--text-main);
+  }
 
-    .survey-header p {
-      font-size: 0.95rem;
-      color: var(--text-sub);
-    }
+  .survey-header p {
+    font-size: 0.95rem;
+    color: var(--text-sub);
+  }
 
-    .question-group {
-      margin-bottom: 32px;
-    }
+  .question-group {
+    margin-bottom: 32px;
+  }
 
-    .question-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 14px;
-      display: block;
-    }
+  .question-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: block;
+    color: var(--text-main);
+  }
 
-    .chip-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
+  .chip-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
 
-    .chip-label {
-      cursor: pointer;
-    }
+  .chip-label {
+    cursor: pointer;
+  }
 
-    .chip-label input {
-      display: none;
-    }
+  .chip-label input {
+    display: none;
+  }
 
-    .chip-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 48px; /* 터치하기 편한 높이 */
-      border: 1.5px solid var(--border-color);
-      border-radius: 12px;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      background-color: #fff;
-      transition: all 0.15s ease;
-      text-align: center;
-    }
+  .chip-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #fff;
+    transition: all 0.18s ease;
+    text-align: center;
+  }
 
-    .chip-label input:checked + .chip-box {
-      border-color: var(--selected-border);
-      background-color: var(--selected-bg);
-      color: var(--primary);
-      font-weight: 700;
-    }
+  .chip-label input:checked + .chip-box {
+    border-color: var(--selected-border);
+    background-color: var(--selected-bg);
+    color: var(--primary);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(201, 138, 117, 0.12);
+  }
 
-    .intensity-scale {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 6px;
-    }
+  .intensity-scale {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
 
-    .intensity-box {
-      height: 50px;
-      border-radius: 10px;
-      font-size: 1rem;
-    }
+  .intensity-box {
+    height: 50px;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
 
-    .intensity-legend {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      margin-top: 10px;
-      padding: 0 4px;
-    }
+  .intensity-legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-sub);
+    margin-top: 10px;
+    padding: 0 4px;
+  }
 
-    .submit-btn {
-      width: 100%;
-      height: 54px;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 14px;
-      font-size: 1.05rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.15s ease, opacity 0.15s ease;
-      margin-top: 10px;
-    }
+  .submit-btn {
+    width: 100%;
+    height: 54px;
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.18s ease, transform 0.1s ease, opacity 0.15s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 14px rgba(201, 138, 117, 0.25);
+  }
 
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+  .submit-btn:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+  }
 
-    /* 완료 화면 */
-    .complete-screen {
-      display: none;
-      text-align: center;
-      padding: 50px 20px 40px;
-    }
+  .submit-btn:active:not(:disabled) {
+    transform: scale(0.99);
+  }
 
-    .complete-icon {
-      width: 56px;
-      height: 56px;
-      background-color: #dcfce7;
-      color: #16a34a;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      margin: 0 auto 20px;
-    }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 
-    .complete-screen h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--text-main);
-    }
+  /* 완료 화면 */
+  .complete-screen {
+    display: none;
+    text-align: center;
+    padding: 50px 20px 40px;
+  }
 
-    .complete-screen p {
-      font-size: 0.95rem;
-      color: var(--text-sub);
-      line-height: 1.5;
-    }
+  .complete-icon {
+    width: 58px;
+    height: 58px;
+    background-color: #fbede6;
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 20px;
+  }
 
-    /* 하단 자동 복귀 프로그레스 바 */
-    .reset-progress-track {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: #f1f5f9;
-      display: none;
-    }
+  .complete-screen h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-main);
+  }
 
-    .reset-progress-bar {
-      height: 100%;
-      width: 0%;
-      background: var(--primary);
-      transition: width 2.5s linear;
-    }
-  </style>
+  .complete-screen p {
+    font-size: 0.95rem;
+    color: var(--text-sub);
+    line-height: 1.5;
+  }
+
+  /* 자동 복귀 게이지 바 */
+  .reset-progress-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: #f5efe8;
+    display: none;
+  }
+
+  .reset-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    transition: width 2.5s linear;
+  }
+</style>
 </head>
 <body>
 
@@ -209,8 +222,8 @@
     <!-- 설문 폼 -->
     <form id="happinessForm">
       <div class="survey-header">
-        <h1>순간의 행복 기록</h1>
-        <p>익명으로 집계되는 10초 설문입니다.</p>
+        <h1>꽝 없는 뽑기 🍀</h1>
+        <p>활동을 진행한 후 느낀 행복을 기록해 주세요.</p>
       </div>
 
       <!-- 항목 1: 행복 유지 시간 -->
@@ -224,13 +237,13 @@
           <label class="chip-label"><input type="radio" name="duration" value="10분"><div class="chip-box">10분</div></label>
           <label class="chip-label"><input type="radio" name="duration" value="30분"><div class="chip-box">30분</div></label>
           <label class="chip-label"><input type="radio" name="duration" value="1시간"><div class="chip-box">1시간</div></label>
-          <label class="chip-label"><input type="radio" name="duration" value="1시간 이상"><div class="chip-box">1시간+</div></label>
+          <label class="chip-label"><input type="radio" name="duration" value="1시간 이상"><div class="chip-box">2시간+</div></label>
         </div>
       </div>
 
       <!-- 항목 2: 행복 강도 -->
       <div class="question-group">
-        <label class="question-title">2. 행복 강도 (1 - 10)</label>
+        <label class="question-title">2. 행복 강도</label>
         <div class="intensity-scale">
           <label class="chip-label"><input type="radio" name="intensity" value="1" required><div class="chip-box intensity-box">1</div></label>
           <label class="chip-label"><input type="radio" name="intensity" value="2"><div class="chip-box intensity-box">2</div></label>
@@ -244,12 +257,12 @@
           <label class="chip-label"><input type="radio" name="intensity" value="10"><div class="chip-box intensity-box">10</div></label>
         </div>
         <div class="intensity-legend">
-          <span>은은한 기쁨</span>
-          <span>강렬한 환희</span>
+          <span>약간 행복함</span>
+          <span>매우 행복함</span>
         </div>
       </div>
 
-      <button type="submit" class="submit-btn" id="submitBtn">기록 남기기</button>
+      <button type="submit" class="submit-btn" id="submitBtn">설문 제출 ✔️</button>
     </form>
 
     <!-- 완료 안내 화면 -->
@@ -267,7 +280,7 @@
 
   <script>
     // 본인의 Google Apps Script 웹 앱 URL 입력
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyMvzC5bT1HtTJ6rCc_Ic_jjM3YePapL2arBYOaANKc5nIUALIJiP126sXRZ59eJmseRA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmQf58_ffcBFygGJWxc-tt5DNlGIj2wgL_B-qYrkC27A9lPkRcE2yjNYfDaeVOZlP4IA/exec';
 
     const form = document.getElementById('happinessForm');
     const submitBtn = document.getElementById('submitBtn');
