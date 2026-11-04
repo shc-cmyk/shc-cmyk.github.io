@@ -6,16 +6,16 @@
   <title>현장 설문조사</title>
   <style>
   :root {
-  --bg-color: #f4f6f3;          /* 은은하고 편안한 미색 세이지 베이스 배경 */
-  --card-bg: #ffffff;
-  --primary: #7d967e;          /* 차분하고 포근한 세이지 그린 메인 버튼 */
-  --primary-hover: #6a826b;    /* 탭/호버 시 살짝 짙어지는 딥 포레스트 그린 */
-  --text-main: #2b332c;        /* 눈이 편안한 딥 올리브 차콜 텍스트 */
-  --text-sub: #788579;         /* 부드러운 뮤트 세이지 서브 텍스트 */
-  --border-color: #e3ebe3;     /* 연하고 자연스러운 그리너리 테두리 */
-  --selected-bg: #f0f5f0;      /* 선택 시 은은하게 맴도는 세이지 틴트 */
-  --selected-border: #9cb59d;  /* 선택 시 테두리 강조선 */
-}
+    --bg-color: #f4f6f3;          /* 은은하고 편안한 미색 세이지 베이스 배경 */
+    --card-bg: #ffffff;
+    --primary: #7d967e;          /* 차분하고 포근한 세이지 그린 메인 버튼 */
+    --primary-hover: #6a826b;    /* 탭/호버 시 살짝 짙어지는 딥 포레스트 그린 */
+    --text-main: #2b332c;        /* 눈이 편안한 딥 올리브 차콜 텍스트 */
+    --text-sub: #788579;         /* 부드러운 뮤트 세이지 서브 텍스트 */
+    --border-color: #e3ebe3;     /* 연하고 자연스러운 그리너리 테두리 */
+    --selected-bg: #f0f5f0;      /* 선택 시 은은하게 맴도는 세이지 틴트 */
+    --selected-border: #9cb59d;  /* 선택 시 테두리 강조선 */
+  }
 
   * {
     box-sizing: border-box;
@@ -42,8 +42,8 @@
     border-radius: 36px;
     box-shadow: 0 16px 48px rgba(189, 168, 153, 0.16);
     width: 100%;
-    max-width: 720px;            /* 기존 520px -> 720px로 확장 */
-    padding: 56px 48px;          /* 내부 패딩 넉넉하게 확장 */
+    max-width: 720px;
+    padding: 56px 48px;
     border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
@@ -55,7 +55,7 @@
   }
 
   .survey-header h1 {
-    font-size: 2.1rem;           /* 메인 타이틀 크기 확대 */
+    font-size: 2.1rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 12px;
@@ -63,7 +63,7 @@
   }
 
   .survey-header p {
-    font-size: 1.15rem;          /* 부제 설명문 확대 */
+    font-size: 1.15rem;
     color: var(--text-sub);
   }
 
@@ -72,14 +72,14 @@
   }
 
   .question-title {
-    font-size: 1.3rem;           /* 질문 라벨 확대 */
+    font-size: 1.3rem;
     font-weight: 600;
     margin-bottom: 18px;
     display: block;
     color: var(--text-main);
   }
 
-  /* 행복 유지 시간 그리드 (간격 및 터치 영역 확대) */
+  /* 행복 유지 시간 그리드 */
   .chip-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -98,10 +98,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 64px;                /* 기존 48px -> 64px로 시원하게 터치 가능 */
+    height: 64px;
     border: 1.8px solid var(--border-color);
     border-radius: 18px;
-    font-size: 1.15rem;          /* 글자 크기 확대 */
+    font-size: 1.15rem;
     color: var(--text-main);
     background-color: #fff;
     transition: all 0.18s ease;
@@ -113,10 +113,112 @@
     background-color: var(--selected-bg);
     color: var(--primary);
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(201, 138, 117, 0.16);
+    box-shadow: 0 4px 12px rgba(125, 150, 126, 0.2);
   }
 
-  /* 1-10 행복 강도 (간격 및 버튼 크기 확대) */
+  /* 8개 기본 버튼과 직접 입력 사이의 옅은 구분선 */
+  .custom-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 20px 0 16px 0;
+    opacity: 0.8;
+  }
+
+  /* 직접 입력 전용 컨테이너 */
+  .custom-duration-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .custom-chip-label {
+    flex: 1.1;
+    cursor: pointer;
+  }
+
+  .custom-inputs-wrapper {
+    flex: 2;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: opacity 0.2s ease;
+  }
+
+  .custom-inputs-wrapper.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* 숫자 입력창 (위아래 화살표 스피너 제거) */
+  .custom-num-input {
+    flex: 1.1;
+    height: 64px;
+    border: 1.8px solid var(--border-color);
+    border-radius: 18px;
+    padding: 0 16px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-main);
+    background-color: #ffffff;
+    outline: none;
+    text-align: center;
+    user-select: auto;
+    -webkit-user-select: auto;
+    -moz-appearance: textfield; /* 파이어폭스 화살표 제거 */
+  }
+
+  .custom-num-input::-webkit-outer-spin-button,
+  .custom-num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;   /* 크롬/사파리 화살표 제거 */
+    margin: 0;
+  }
+
+  .custom-num-input::placeholder {
+    color: #b5c2b6;             /* 옅은 세이지 톤의 플레이스홀더 */
+    font-weight: 500;
+  }
+
+  .custom-num-input:focus {
+    border-color: var(--selected-border);
+    background-color: var(--selected-bg);
+  }
+
+  /* 좌우 분/시간 선택 세그먼트 컨트롤 */
+  .unit-toggle-group {
+    flex: 1.2;
+    display: flex;
+    height: 64px;
+    background-color: #ffffff;
+    border: 1.8px solid var(--border-color);
+    border-radius: 18px;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .unit-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .unit-btn.active {
+    background-color: var(--selected-bg);
+    color: var(--primary);
+    font-weight: 700;
+    border: 1.5px solid var(--selected-border);
+    box-shadow: 0 2px 6px rgba(125, 150, 126, 0.15);
+  }
+
+  /* 1-10 행복 강도 */
   .intensity-scale {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -124,15 +226,15 @@
   }
 
   .intensity-box {
-    height: 66px;                /* 세로 길이 시원하게 확대 */
+    height: 66px;
     border-radius: 14px;
-    font-size: 1.25rem;          /* 숫자 크기 확대 */
+    font-size: 1.25rem;
   }
 
   .intensity-legend {
     display: flex;
     justify-content: space-between;
-    font-size: 0.95rem;          /* 안내 문구 확대 */
+    font-size: 0.95rem;
     color: var(--text-sub);
     margin-top: 14px;
     padding: 0 6px;
@@ -141,12 +243,12 @@
   /* 하단 제출 버튼 */
   .submit-btn {
     width: 100%;
-    height: 68px;                /* 터치하기 편한 묵직한 높이 */
+    height: 68px;
     background-color: var(--primary);
     color: #ffffff;
     border: none;
     border-radius: 20px;
-    font-size: 1.25rem;          /* 버튼 글자 확대 */
+    font-size: 1.25rem;
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.18s ease, transform 0.1s ease, opacity 0.15s ease;
@@ -176,9 +278,9 @@
   }
 
   .complete-icon {
-    width: 72px;                 /* 체크 아이콘 확대 */
+    width: 72px;
     height: 72px;
-    background-color: #fbede6;
+    background-color: #f0f5f0;
     color: var(--primary);
     border-radius: 50%;
     display: flex;
@@ -233,6 +335,8 @@
       <!-- 항목 1: 행복 유지 시간 -->
       <div class="question-group">
         <label class="question-title">1. 행복 유지 시간</label>
+        
+        <!-- 기본 8개 프리셋 칩 -->
         <div class="chip-grid">
           <label class="chip-label"><input type="radio" name="duration" value="10초" required><div class="chip-box">10초</div></label>
           <label class="chip-label"><input type="radio" name="duration" value="20초"><div class="chip-box">20초</div></label>
@@ -241,7 +345,28 @@
           <label class="chip-label"><input type="radio" name="duration" value="3분"><div class="chip-box">3분</div></label>
           <label class="chip-label"><input type="radio" name="duration" value="5분"><div class="chip-box">5분</div></label>
           <label class="chip-label"><input type="radio" name="duration" value="10분"><div class="chip-box">10분</div></label>
-          <label class="chip-label"><input type="radio" name="duration" value="30분 이상"><div class="chip-box">30분+</div></label>
+          <label class="chip-label"><input type="radio" name="duration" value="30분"><div class="chip-box">30분</div></label>
+        </div>
+
+        <!-- 옅은 구분선 -->
+        <div class="custom-divider"></div>
+
+        <!-- 직접 입력 라인 -->
+        <div class="custom-duration-container">
+          <label class="custom-chip-label chip-label">
+            <input type="radio" name="duration" id="customDurationRadio" value="__CUSTOM__">
+            <div class="chip-box">직접 입력</div>
+          </label>
+          
+          <div class="custom-inputs-wrapper disabled" id="customInputsWrapper">
+            <input type="number" id="customNumber" class="custom-num-input" placeholder="숫자" min="1" max="999" disabled>
+            
+            <!-- 좌우 분/시간 선택 버튼 -->
+            <div class="unit-toggle-group">
+              <button type="button" class="unit-btn active" data-unit="분" id="unitMinBtn" disabled>분</button>
+              <button type="button" class="unit-btn" data-unit="시간" id="unitHourBtn" disabled>시간</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -292,19 +417,77 @@
     const progressTrack = document.getElementById('progressTrack');
     const progressBar = document.getElementById('progressBar');
 
+    // 직접 입력 관련 요소
+    const durationRadios = document.querySelectorAll('input[name="duration"]');
+    const customRadio = document.getElementById('customDurationRadio');
+    const customWrapper = document.getElementById('customInputsWrapper');
+    const customNumber = document.getElementById('customNumber');
+    const unitButtons = document.querySelectorAll('.unit-btn');
+    
+    let selectedUnit = '분'; // 기본값
+
+    // 분 / 시간 토글 버튼 이벤트
+    unitButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        unitButtons.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        selectedUnit = this.getAttribute('data-unit');
+      });
+    });
+
+    // 직접 입력 라디오 선택 시 인풋 활성화 / 비활성화 처리
+    durationRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (customRadio.checked) {
+          customWrapper.classList.remove('disabled');
+          customNumber.disabled = false;
+          unitButtons.forEach(b => b.disabled = false);
+          customNumber.focus();
+        } else {
+          customWrapper.classList.add('disabled');
+          customNumber.disabled = true;
+          unitButtons.forEach(b => b.disabled = true);
+          customNumber.value = '';
+        }
+      });
+    });
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      // 중복 제출 차단
+      let finalDuration = '';
+
+      // 직접 입력이 선택된 경우
+      if (customRadio.checked) {
+        const numVal = customNumber.value.trim();
+        if (!numVal) {
+          alert('유지 시간 숫자를 입력해 주세요.');
+          customNumber.focus();
+          return;
+        }
+        finalDuration = `${numVal}${selectedUnit}`;
+      } else {
+        const selectedRadio = document.querySelector('input[name="duration"]:checked');
+        if (selectedRadio) {
+          finalDuration = selectedRadio.value;
+        }
+      }
+
+      const selectedIntensity = document.querySelector('input[name="intensity"]:checked')?.value || '';
+
+      // 전송용 FormData 구성
+      const submitData = new FormData();
+      submitData.append('duration', finalDuration);
+      submitData.append('intensity', selectedIntensity);
+
+      // 연타 방지
       submitBtn.disabled = true;
       submitBtn.innerText = '저장 중...';
-
-      const formData = new FormData(form);
 
       // 구글 시트로 백그라운드 전송
       fetch(SCRIPT_URL, {
         method: 'POST',
-        body: formData,
+        body: submitData,
         mode: 'no-cors'
       })
       .then(() => {
@@ -314,7 +497,7 @@
         console.error('Error:', error);
         alert('네트워크 연결을 확인해 주세요.');
         submitBtn.disabled = false;
-        submitBtn.innerText = '기록 남기기';
+        submitBtn.innerText = '설문 제출 ✔️';
       });
     });
 
@@ -331,9 +514,21 @@
 
       // 3. 2.5초 후 초기화하여 다음 사람 맞이
       setTimeout(() => {
-        form.reset(); // 라디오 버튼 선택값 초기화
+        form.reset(); // 모든 라디오 및 인풋 초기화
+
+        // 직접 입력창 상태 및 단위 버튼 초기화
+        customWrapper.classList.add('disabled');
+        customNumber.disabled = true;
+        customNumber.value = '';
+        unitButtons.forEach(b => {
+          b.disabled = true;
+          b.classList.remove('active');
+        });
+        document.getElementById('unitMinBtn').classList.add('active');
+        selectedUnit = '분';
+
         submitBtn.disabled = false;
-        submitBtn.innerText = '기록 남기기';
+        submitBtn.innerText = '설문 제출 ✔️';
 
         progressBar.style.transition = 'none';
         progressBar.style.width = '0%';
